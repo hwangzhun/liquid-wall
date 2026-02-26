@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Liquid Glass Message Wall</title>
+    <!-- Tailwind CSS with plugins -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Fonts and Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#197fe6",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                        "glass-border": "rgba(255, 255, 255, 0.4)",
+                        "glass-bg": "rgba(255, 255, 255, 0.15)",
+                        "glass-highlight": "rgba(255, 255, 255, 0.5)",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { 
+                        "DEFAULT": "0.25rem", 
+                        "lg": "0.5rem", 
+                        "xl": "0.75rem", 
+                        "2xl": "1rem", 
+                        "3xl": "1.5rem",
+                        "full": "9999px" 
+                    },
+                    backgroundImage: {
+                        'pastel-gradient': 'radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%)',
+                        'light-pastel': 'radial-gradient(at 40% 20%, hsla(210, 100%, 93%, 1) 0px, transparent 50%), radial-gradient(at 80% 0%, hsla(189, 100%, 96%, 1) 0px, transparent 50%), radial-gradient(at 0% 50%, hsla(341, 100%, 96%, 1) 0px, transparent 50%), radial-gradient(at 80% 50%, hsla(250, 100%, 96%, 1) 0px, transparent 50%), radial-gradient(at 0% 100%, hsla(22, 100%, 96%, 1) 0px, transparent 50%), radial-gradient(at 80% 100%, hsla(242, 100%, 96%, 1) 0px, transparent 50%), radial-gradient(at 0% 0%, hsla(343, 100%, 96%, 1) 0px, transparent 50%)'
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        /* Custom Masonry layout simulation for Tailwind */
+        .masonry-grid {
+            column-count: 1;
+            column-gap: 1.5rem;
+        }
+        @media (min-width: 640px) { .masonry-grid { column-count: 2; } }
+        @media (min-width: 1024px) { .masonry-grid { column-count: 3; } }
+        @media (min-width: 1280px) { .masonry-grid { column-count: 4; } }
+        
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 12px 24px -8px rgba(25, 127, 230, 0.2);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .glass-card:hover::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            z-index: -1;
+            border-radius: inherit;
+            background: linear-gradient(45deg, transparent 40%, rgba(25, 127, 230, 0.3), rgba(168, 85, 247, 0.3), transparent 60%);
+            animation: border-shine 1.5s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes border-shine {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Ambient floating blobs animation */
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: -1;
+            animation: float 20s infinite alternate;
+            opacity: 0.6;
+        }
+        .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #c4b5fd; animation-duration: 25s; }
+        .blob-2 { bottom: -10%; right: -10%; width: 60vw; height: 60vw; background: #a5f3fc; animation-duration: 30s; animation-delay: -5s; }
+        .blob-3 { top: 40%; left: 30%; width: 40vw; height: 40vw; background: #fbcfe8; animation-duration: 22s; animation-delay: -10s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(30px, 50px) rotate(10deg); }
+        }
+
+        .detail-glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+        }
+        
+        .liquid-button {
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(4px);
+            transition: all 0.2s ease;
+        }
+        .liquid-button:hover {
+            background: rgba(255, 255, 255, 0.7);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(25, 127, 230, 0.15);
+        }
+
+        .dark-mode-transition {
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+    </style>
+</head>
+<body class="font-display antialiased text-slate-900 bg-light-pastel min-h-screen relative overflow-x-hidden selection:bg-primary/30">
+
+    <div id="root"></div>
+
+    <!-- Load Libraries -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/history@5/umd/history.development.js"></script>
+    <script src="https://unpkg.com/react-router@6.3.0/umd/react-router.development.js"></script>
+    <script src="https://unpkg.com/react-router-dom@6.3.0/umd/react-router-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { createRoot } = ReactDOM;
+        const { MemoryRouter, Routes, Route, Link, useNavigate, useLocation } = ReactRouterDOM;
+
+        // --- Layout Wrapper ---
+        const Layout = ({ children }) => {
+            return (
+                <div className="min-h-screen relative">
+                    <div className="fixed inset-0 overflow-hidden pointer-events-none">
+                        <div className="blob blob-1 rounded-full mix-blend-multiply"></div>
+                        <div className="blob blob-2 rounded-full mix-blend-multiply"></div>
+                        <div className="blob blob-3 rounded-full mix-blend-multiply"></div>
+                    </div>
+                    {children}
+                </div>
+            );
+        };
+
+        // --- Navbar Component ---
+        const Navbar = () => {
+            const navigate = useNavigate();
+            return (
+                <nav className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 px-4">
+                    <div className="glass-panel rounded-full px-6 py-3 flex items-center gap-6 max-w-4xl w-full justify-between transition-all duration-300">
+                        <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary">
+                                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>water_drop</span>
+                            </div>
+                            <span className="font-bold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600">Liquid Wall</span>
+                        </div>
+                        <div className="hidden md:flex items-center gap-1 bg-white/20 p-1 rounded-full backdrop-blur-sm border border-white/30 shadow-inner">
+                            <Link to="/" className="px-5 py-2 rounded-full text-sm font-medium bg-white text-slate-900 shadow-sm transition-all hover:bg-white/80">Home</Link>
+                            <a className="px-5 py-2 rounded-full text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-white/40 transition-all" href="#">Trending</a>
+                            <a className="px-5 py-2 rounded-full text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-white/40 transition-all" href="#">New</a>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <button className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-white/40 text-slate-700 hover:bg-white hover:text-primary transition-all backdrop-blur-sm">
+                                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>search</span>
+                            </button>
+                            <button className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-full text-sm font-semibold shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:-translate-y-0.5 transition-all active:scale-95">
+                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>add</span>
+                                <span className="hidden sm:inline">Post Message</span>
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+            );
+        };
+
+        // --- Home Page Screen ---
+        const HomePage = () => {
+            const navigate = useNavigate();
+
+            const posts = [
+                {
+                    id: 1,
+                    type: 'text',
+                    author: 'Sarah Jenkins',
+                    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAHXOCCVLi4NQ1DGe0TTJyjJ0z0Vg-aZsYv4-27c934HVrK9_0LS-k_pDpuhnwqgWSvzPY1rM44mP0rF-ntk3lXt9ywgpgyX7nP7oXLcA_cUvVGbnPeooHDANUEaCbRvnIPW1LG-i4_wJ36tv2YikKYA3WzInn-QDJBpwnIi5dOXXPANbfCyIf5kIV90w0sAZXLbDuE_9w4g58nHOLEIsfHz6rUbag101HdyMA8oMvqAGuQLqZ3IBfCU8RwMfPKmI_qFtdSZBq-kFY',
+                    time: '2m ago',
+                    content: 'Just discovered the beauty of glassmorphism. It adds such a depth to the UI without overwhelming the content. ✨',
+                    likes: 24,
+                    comments: 3
+                },
+                {
+                    id: 2,
+                    type: 'image',
+                    author: 'Davide Rossi',
+                    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAuficfLZnOZF2vBbcP8J0s_ft0Z_lgSNfo29C6T_TGvBRriVu8Jj0F5vOR0Y3R0b-A49TP6_J4OtO_U10qMsmhMSpbplK2OuME2kNNWfsVArM2kkIcx0LHRNiWuskMFpgRYbxeA5A-1jZpuOXYyZj5buHRrO4M_xxOw3dMllthemMlyXd9eIx30SLgnSNa1XEURITiVzp5QJTdxYabCQJAXhvrkukPub4-f0YxC6V2AKsnGMNfIwI_tdgTwmI5za-rDmNTh9XDE5U',
+                    time: '15m ago',
+                    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCOhc8C8aWzLNJjSUVOJ-pPkiLmhnJPGtwO4hzdypPGRvi-xZ_RCwBeOVaJYPt-lB03vuiGYrBy-mtRJF5bkWirQ_SHKvC_zqVgmRf2DnSJ_DzQOxuPzGv4e3hHrH4x8s-nEH5L6LWcoj2dWR7uBDD6z0J2MJtnWFqSMdErO7frci8DqRZHMdM47pagUwda6PzULP0iqhBhcu3xzjpN-hfXpDiXuXRQCRj3MG5SjqFWDPCKdiYohZnwKOyTafkIl3xaPuJAasJ0cRY',
+                    content: 'Sunday mood. The colors of the sky today were absolutely unreal. Taking a moment to breathe.',
+                    tags: ['Inspiration', 'Design']
+                },
+                {
+                    id: 3,
+                    type: 'quote',
+                    author: 'Leonardo da Vinci',
+                    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAxshErpCEij5CNHhPHd8Gddwm6j8q68ghVipzlOkvvE-ovou9--V43h01oGa7a2QYh2ykSCAjCScg1v3AgraR0YYwdSyWvREnQ2nul5vxElEFdhvnnxUQ2nmC43E0LyDtLQo-DSSRU1sCdhQH7BQFSICb3SWXhh_OUJLi2StkguzBKOP-h0pKZ3iB2ClXHTqlYFCzmJV3oGmn6x_oMh2IK4fk1HszWnI_hmFw8INeIwKY6o98hTp-NpGKyh1jGT0dZC1vaUFQovXs',
+                    title: 'Artist & Inventor',
+                    content: '"Simplicity is the ultimate sophistication."'
+                },
+                {
+                    id: 4,
+                    type: 'article',
+                    author: 'Maya K.',
+                    avatar: null,
+                    initials: 'MK',
+                    time: '1h ago',
+                    title: 'The Future of Interfaces',
+                    content: 'We are moving towards interfaces that feel more organic. It\'s not just about flat design anymore, but about depth, material, and how elements interact with light. The liquid glass aesthetic isn\'t just a trend; it\'s an attempt to bring physical properties into the digital realm without skeuomorphism\'s literalness.',
+                    progress: 66,
+                    readTime: '3 min read'
+                },
+                {
+                    id: 5,
+                    type: 'status',
+                    icon: 'check_circle',
+                    iconColor: 'emerald',
+                    title: 'Project Update',
+                    content: 'Design system v2.0 deployed successfully.'
+                },
+                {
+                    id: 6,
+                    type: 'media',
+                    author: 'Alex Chen',
+                    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBND2bQ0VjGXFsFKwPcs-l1GG6yitulVk3XGutVu54IY-l8f-sh7dHmZL4E5dYnj7kMneXjh7jFzpZcn9lcbE0LKgF1HyPCRdOWKbeUWKEBCyvU-qBxtxbhYXH7HoAQw6wVKcdGxSt4PWKczz7VpTJc5gd0TzcmVumke0xw3Y-ph8ljoaoSk-Xxv9N2RusD4QKZYJInEzRfZmSIRMZgQeR2mnlYe-D2lR5RIgDyW2PsUSfNHyFuwnD7Db1qxXmsDkMnEl4Ll1LB1eM',
+                    location: 'Chicago',
+                    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC4bdyQ4yi2S0AjoOixUfxptqMdAFqj9UCl4MAwwmiXyMCe2XJVOEC5Bv21GjZi2xWlUbrqhb21rnObqgGKF_ajCtvonUS9RDn-YzdMvCbaoPA4D1dfGxK7UweR1nSnBUc7_bVpnWc6QlU36XIqJ5Ufs-ReXvfYAAelrcT7h7EEZaqEWjjTTB13_K5DaS02veYNWAa0yEvZF_iz4NLfmOmiJ3Vt9gd9IWlA0q4b4K7LWj6QwFBC9xJOvT1omZBYLwBSTnpsqjWfLps',
+                    content: 'Architecture tour downtown. The way the light hits these buildings is incredible.'
+                },
+                {
+                    id: 7,
+                    type: 'prompt',
+                    title: 'Daily Prompt',
+                    content: 'What would you build if you knew you couldn\'t fail?',
+                    tag: 'Idea',
+                    participants: 15
+                },
+                {
+                    id: 8,
+                    type: 'simple',
+                    author: 'Jane Doe',
+                    initials: 'JD',
+                    time: '4h ago',
+                    content: '"Coffee is a liquid hug for your brain." ☕️'
+                }
+            ];
+
+            return (
+                <div className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto z-10 relative">
+                    <header className="text-center mb-16 max-w-2xl mx-auto">
+                        <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-slate-900 mb-4 drop-shadow-sm">Flowing Thoughts</h1>
+                        <p className="text-lg text-slate-600 font-light max-w-lg mx-auto leading-relaxed">
+                            Share your moments in a cascade of glass and light. A space for transparency and connection.
+                        </p>
+                    </header>
+
+                    <div className="masonry-grid">
+                        {posts.map((post) => (
+                            <div key={post.id} onClick={() => navigate('/detail')} className="masonry-item">
+                                {post.type === 'text' && (
+                                    <div className="glass-card rounded-2xl p-6">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full overflow-hidden border border-white/50 shadow-sm">
+                                                    <img src={post.avatar} className="w-full h-full object-cover" alt={post.author} />
+                                                </div>
+                                                <span className="text-xs font-semibold text-slate-700">{post.author}</span>
+                                            </div>
+                                            <span className="text-xs text-slate-500">{post.time}</span>
+                                        </div>
+                                        <p className="text-slate-800 leading-relaxed font-normal">{post.content}</p>
+                                        <div className="mt-4 flex gap-3 text-slate-500">
+                                            <button className="flex items-center gap-1 hover:text-primary transition-colors text-xs">
+                                                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>favorite</span> {post.likes}
+                                            </button>
+                                            <button className="flex items-center gap-1 hover:text-primary transition-colors text-xs">
+                                                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>chat_bubble</span> {post.comments}
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {post.type === 'image' && (
+                                    <div className="glass-card rounded-2xl p-0">
+                                        <div className="h-48 w-full overflow-hidden relative">
+                                            <img src={post.image} className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" alt="Content" />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                                        </div>
+                                        <div className="p-6">
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-full overflow-hidden border border-white/50 shadow-sm">
+                                                        <img src={post.avatar} className="w-full h-full object-cover" alt={post.author} />
+                                                    </div>
+                                                    <span className="text-xs font-semibold text-slate-700">{post.author}</span>
+                                                </div>
+                                                <span className="text-xs text-slate-500">{post.time}</span>
+                                            </div>
+                                            <p className="text-slate-800 leading-relaxed text-sm mb-3">{post.content}</p>
+                                            <div className="flex flex-wrap gap-2 mb-4">
+                                                {post.tags.map(tag => (
+                                                    <span key={tag} className="px-2 py-1 rounded-md bg-white/40 text-[10px] font-bold text-slate-600 uppercase tracking-wider">#{tag}</span>
+                                                ))}
+                                            </div>
+                                            <div className="pt-3 border-t border-white/30 flex justify-between items-center">
+                                                <div className="flex gap-4 text-slate-500">
+                                                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>favorite</span>
+                                                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>share</span>
+                                                </div>
+                                                <span className="text-[10px] text-slate-400 font-medium">Read more</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {post.type === 'quote' && (
+                                    <div className="glass-card rounded-2xl p-8 bg-gradient-to-br from-white/30 to-white/10">
+                                        <span className="material-symbols-outlined text-primary/40 mb-4" style={{ fontSize: '32px' }}>format_quote</span>
+                                        <p className="text-xl md:text-2xl font-serif italic text-slate-800 leading-snug mb-6">{post.content}</p>
+                                        <div className="flex items-center justify-end gap-3">
+                                            <div className="text-right">
+                                                <p className="text-xs font-bold text-slate-900">{post.author}</p>
+                                                <p className="text-[10px] text-slate-500">{post.title}</p>
+                                            </div>
+                                            <div className="w-10 h-10 rounded-full overflow-hidden border border-white/50 shadow-sm bg-slate-200">
+                                                <img src={post.avatar} className="w-full h-full object-cover grayscale opacity-80" alt={post.author} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {post.type === 'article' && (
+                                    <div className="glass-card rounded-2xl p-6">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full overflow-hidden border border-white/50 shadow-sm bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs">
+                                                    {post.initials}
+                                                </div>
+                                                <span className="text-xs font-semibold text-slate-700">{post.author}</span>
+                                            </div>
+                                            <span className="text-xs text-slate-500">{post.time}</span>
+                                        </div>
+                                        <h3 className="font-bold text-slate-900 text-lg mb-2">{post.title}</h3>
+                                        <p className="text-slate-700 text-sm leading-relaxed mb-4">{post.content}</p>
+                                        <div className="w-full h-1 bg-slate-200/50 rounded-full overflow-hidden mb-4">
+                                            <div className="h-full bg-primary/60 rounded-full" style={{ width: `${post.progress}%` }}></div>
+                                        </div>
+                                        <div className="flex justify-between items-center text-xs text-slate-500">
+                                            <span>{post.readTime}</span>
+                                            <button className="text-primary font-medium hover:underline">Continue reading</button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {post.type === 'status' && (
+                                    <div className="glass-card rounded-2xl p-5 flex items-center gap-4">
+                                        <div className={`w-12 h-12 rounded-full bg-${post.iconColor}-100 text-${post.iconColor}-600 flex items-center justify-center shrink-0`}>
+                                            <span className="material-symbols-outlined">{post.icon}</span>
+                                        </div>
+                                        <div>
+                                            <p className="font-medium text-slate-900">{post.title}</p>
+                                            <p className="text-xs text-slate-500">{post.content}</p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {post.type === 'media' && (
+                                    <div className="glass-card rounded-2xl p-0 overflow-hidden group">
+                                        <div className="h-40 bg-slate-200 relative">
+                                            <img src={post.image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Media" />
+                                            <div className="absolute top-3 right-3 bg-white/80 backdrop-blur-md px-2 py-1 rounded-md text-[10px] font-bold text-slate-800 shadow-sm flex items-center gap-1">
+                                                <span className="material-symbols-outlined text-red-500" style={{ fontSize: '12px' }}>location_on</span> {post.location}
+                                            </div>
+                                        </div>
+                                        <div className="p-5">
+                                            <div className="flex items-center gap-3 mb-3">
+                                                <div className="w-8 h-8 rounded-full overflow-hidden border border-white/50 shadow-sm">
+                                                    <img src={post.avatar} className="w-full h-full object-cover" alt={post.author} />
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs font-semibold text-slate-700">{post.author}</p>
+                                                    <p className="text-[10px] text-slate-500">Travelling</p>
+                                                </div>
+                                            </div>
+                                            <p className="text-slate-800 text-sm">{post.content}</p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {post.type === 'prompt' && (
+                                    <div className="glass-card rounded-2xl p-6 bg-gradient-to-tr from-primary/10 via-purple-500/10 to-pink-500/10 border-primary/20">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="w-10 h-10 rounded-xl bg-white/60 shadow-sm flex items-center justify-center text-primary">
+                                                <span className="material-symbols-outlined">lightbulb</span>
+                                            </div>
+                                            <span className="text-xs text-slate-500 bg-white/40 px-2 py-1 rounded-full">{post.tag}</span>
+                                        </div>
+                                        <h4 className="font-bold text-slate-900 mb-2">{post.title}</h4>
+                                        <p className="text-slate-700 text-sm mb-4">{post.content}</p>
+                                        <div className="flex -space-x-2 overflow-hidden mb-3">
+                                            {[1, 2, 3].map(i => (
+                                                <img key={i} className="inline-block h-6 w-6 rounded-full ring-2 ring-white" src={`https://i.pravatar.cc/150?u=${post.id}${i}`} alt="Avatar" />
+                                            ))}
+                                            <div className="h-6 w-6 rounded-full ring-2 ring-white bg-slate-100 flex items-center justify-center text-[8px] font-bold text-slate-500">+{post.participants}</div>
+                                        </div>
+                                        <button className="w-full py-2 rounded-lg bg-white/50 hover:bg-white text-primary text-xs font-bold transition-colors">Join Discussion</button>
+                                    </div>
+                                )}
+
+                                {post.type === 'simple' && (
+                                    <div className="glass-card rounded-2xl p-5">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-6 h-6 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center text-[10px] font-bold">
+                                                    {post.initials}
+                                                </div>
+                                                <span className="text-xs font-semibold text-slate-700">{post.author}</span>
+                                            </div>
+                                            <span className="text-[10px] text-slate-400">{post.time}</span>
+                                        </div>
+                                        <p className="text-slate-600 text-sm italic">{post.content}</p>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Floating Action Button Mobile */}
+                    <button className="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-xl shadow-primary/40 flex items-center justify-center z-50 active:scale-95 transition-transform">
+                        <span className="material-symbols-outlined">add</span>
+                    </button>
+                </div>
+            );
+        };
+
+        // --- Detail Screen (Modal UI) ---
+        const DetailPage = () => {
+            const navigate = useNavigate();
+
+            return (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+                    {/* Backdrop */}
+                    <div className="absolute inset-0 bg-slate-50/30 backdrop-blur-md" onClick={() => navigate('/')}></div>
+                    
+                    {/* Modal Content */}
+                    <div className="relative w-full max-w-3xl detail-glass-panel rounded-3xl p-0 overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-300">
+                        {/* Top Bar Actions */}
+                        <div className="absolute top-6 right-6 z-20 flex items-center gap-3">
+                            <button className="liquid-button h-10 w-10 flex items-center justify-center rounded-full text-slate-600 hover:text-primary transition-colors">
+                                <span className="material-symbols-outlined text-[20px]">more_horiz</span>
+                            </button>
+                            <button onClick={() => navigate('/')} className="liquid-button h-10 w-10 flex items-center justify-center rounded-full text-slate-600 hover:text-red-500 transition-colors">
+                                <span className="material-symbols-outlined text-[20px]">close</span>
+                            </button>
+                        </div>
+
+                        {/* Content Container */}
+                        <div className="flex flex-col md:flex-row min-h-[500px]">
+                            {/* Left Visual Area */}
+                            <div className="hidden md:flex md:w-2/5 bg-slate-100/30 border-r border-white/20 relative items-center justify-center overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent"></div>
+                                <div 
+                                    className="absolute inset-0 bg-cover bg-center opacity-80 mix-blend-overlay"
+                                    style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuB3Vit67mRMtGySu1sE55PL19W-_1du-n11lylw_heE1VWZeQRw7sJ2kpkrPl1sbZj5B0OdCxwPZyrgALhKZtG9s3mrCHXDYKuC57-wc9FZ9hAnc0Hg7ignj_jUF0fJL-rPTY1UgiR0vBMRSGB2iijKq5PFhC56qCLrWcMDIjPmyVgug1eet2VyDzGAc3WSnqHQcPuF5X1VMXZPp-3-bLuuHkYc5hXJs59er6q5qoJK6V3Abb3TSrZ5rcWuLuIL0xi3CYVkt44Z_m8")' }}
+                                ></div>
+                                <div className="absolute bottom-6 left-6 right-6">
+                                    <div className="flex items-center gap-2 text-slate-500 text-xs font-medium uppercase tracking-wider backdrop-blur-sm bg-white/30 w-fit px-3 py-1 rounded-full">
+                                        <span className="material-symbols-outlined text-sm">image</span>
+                                        <span>Visual Inspiration</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Right Content Area */}
+                            <div className="flex-1 flex flex-col p-8 md:p-10 relative">
+                                {/* Author Header */}
+                                <div className="flex items-center gap-4 mb-8">
+                                    <div className="relative group cursor-pointer">
+                                        <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-purple-400 rounded-full opacity-30 group-hover:opacity-70 blur transition duration-200"></div>
+                                        <div className="relative h-14 w-14 rounded-full p-[2px] bg-white/50 backdrop-blur-sm">
+                                            <img alt="Alice M." className="h-full w-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlq9HsQ7kwTJok7idTB2EP2GT8gDyyqWSQQZ83sJRIB_ES-bCTLnVG5zhOmhi2xGdbCEgEHRpBEp7jsKq8ltdiXeeN4ryHVrZTlVeqNlXNlWOlTOpta2ZlwKlgHL0tbbC-sDV-W3t0MDd7T7z7C_RC7U7mAKZniNzvcBrd4TbvyCnFUe_3uahbvVvyv96JAtAnx3FAw6mE2jkiCfzX306gqjQRo7TKEu2IfhrKgTE9Majb2l5OumYYUyyVKVDfkWDBdflGPXy0q-g" />
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <h3 className="text-xl font-bold text-slate-900 leading-tight">Alice M.</h3>
+                                        <div className="flex items-center gap-2 text-sm text-slate-500">
+                                            <span>@alicemodes</span>
+                                            <span className="w-1 h-1 rounded-full bg-slate-400"></span>
+                                            <span className="text-primary font-medium">Follow</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Message Body */}
+                                <div className="flex-1 mb-10">
+                                    <p className="text-2xl md:text-3xl font-light text-slate-800 leading-snug tracking-tight">
+                                        Just explored the new translucent CSS properties. The depth you can achieve with <span className="font-medium text-primary">backdrop-filter</span> is incredible when paired with subtle gradients.
+                                    </p>
+                                    <p className="text-xl md:text-2xl font-light text-slate-600 leading-snug mt-6">
+                                        It really feels like looking through water. 💧✨
+                                    </p>
+                                </div>
+
+                                {/* Meta */}
+                                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-8 pt-6 border-t border-slate-200/50 text-sm text-slate-500 font-medium">
+                                    <span className="flex items-center gap-1.5">
+                                        <span className="material-symbols-outlined text-[18px]">schedule</span>
+                                        10:42 AM · Oct 24, 2023
+                                    </span>
+                                    <span className="flex items-center gap-1.5">
+                                        <span className="material-symbols-outlined text-[18px]">public</span>
+                                        San Francisco, CA
+                                    </span>
+                                    <span className="text-primary hover:underline cursor-pointer">#DesignDaily</span>
+                                    <span className="text-primary hover:underline cursor-pointer">#CSS</span>
+                                </div>
+
+                                {/* Stats */}
+                                <div className="flex items-center gap-6 mb-8">
+                                    <div className="flex flex-col">
+                                        <span className="text-lg font-bold text-slate-900">1,240</span>
+                                        <span className="text-xs text-slate-500 uppercase tracking-wide">Likes</span>
+                                    </div>
+                                    <div className="w-px h-8 bg-slate-200/50"></div>
+                                    <div className="flex flex-col">
+                                        <span className="text-lg font-bold text-slate-900">48</span>
+                                        <span className="text-xs text-slate-500 uppercase tracking-wide">Replies</span>
+                                    </div>
+                                </div>
+
+                                {/* Actions */}
+                                <div className="flex items-center gap-4 mt-auto">
+                                    <button className="group relative flex items-center justify-center gap-2 px-6 h-12 rounded-xl bg-slate-100/50 hover:bg-red-50 text-slate-600 hover:text-red-500 transition-all overflow-hidden border border-transparent hover:border-red-200">
+                                        <span className="material-symbols-outlined group-hover:fill-current group-hover:scale-110 transition-transform">favorite</span>
+                                        <span className="font-semibold">Like</span>
+                                    </button>
+                                    <button className="flex-1 group relative flex items-center justify-center gap-2 px-6 h-12 rounded-xl bg-primary text-white hover:bg-blue-600 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all overflow-hidden">
+                                        <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 rotate-12"></div>
+                                        <span className="material-symbols-outlined">chat_bubble</span>
+                                        <span className="font-semibold">Reply</span>
+                                    </button>
+                                    <button className="group flex items-center justify-center w-12 h-12 rounded-xl bg-slate-100/50 hover:bg-slate-200 text-slate-600 transition-all">
+                                        <span className="material-symbols-outlined">ios_share</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Main App Component ---
+        const App = () => {
+            return (
+                <Layout>
+                    <Navbar />
+                    <Routes>
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/detail" element={<DetailPage />} />
+                    </Routes>
+                </Layout>
+            );
+        };
+
+        const container = document.getElementById('root');
+        const root = createRoot(container);
+        root.render(
+            <MemoryRouter>
+                <App />
+            </MemoryRouter>
+        );
+    </script>
+</body>
+</html>
