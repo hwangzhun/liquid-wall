@@ -200,10 +200,13 @@ export default function HomePage({ searchQuery, postFormOpen, setPostFormOpen, n
       {/* Hero Header */}
       <header className="text-center mb-10 sm:mb-16 max-w-2xl mx-auto hero-enter">
         <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mb-3 sm:mb-4 drop-shadow-sm">
-          Flowing Thoughts
+        心语流转
         </h1>
         <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 font-light max-w-lg mx-auto leading-relaxed">
-          Share your moments in a cascade of glass and light. A space for transparency and connection.
+        在光影交织的晶莹世界里，定格你的每一刻。
+        </p>
+        <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 font-light max-w-lg mx-auto leading-relaxed">
+        让连接更真挚，让灵魂更透明。
         </p>
       </header>
 

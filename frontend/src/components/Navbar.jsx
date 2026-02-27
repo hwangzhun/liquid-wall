@@ -48,7 +48,7 @@ export default function Navbar({ onSearch, onOpenPost, onOpenLogin, darkMode, on
           >
             <img src="/favicon.png" alt="Liquid Wall" className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl object-cover" />
             <span className="font-bold text-base sm:text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-slate-100 dark:to-slate-400">
-              Liquid Wall
+            流光语壁
             </span>
           </div>
 
