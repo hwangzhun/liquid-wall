@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 
 function timeAgo(dateStr) {
   if (!dateStr) return '';
@@ -70,7 +70,9 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
         const updated = await res.json();
         onUpdate?.(updated);
       }
-    } catch {}
+    } catch (err) {
+      void err;
+    }
     setAddingTag(false);
   }
 
@@ -112,7 +114,7 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
                 </button>
                 <button
                   onClick={() => setConfirmDelete(false)}
-                  className="px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/20 text-slate-600 dark:text-slate-300 text-xs font-semibold transition-colors"
+                  className="px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/20 text-[color:var(--color-fg-muted)] text-xs font-semibold transition-colors"
                 >
                   取消
                 </button>
@@ -121,14 +123,14 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
               <>
                 <button
                   onClick={() => onEdit?.(post)}
-                  className="liquid-button h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-full text-slate-600 dark:text-slate-300 hover:text-[#197fe6] transition-colors"
+                  className="liquid-button h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-full text-[color:var(--color-fg-muted)] hover:text-[#197fe6] transition-colors"
                   title="编辑留言"
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>edit</span>
                 </button>
                 <button
                   onClick={() => setConfirmDelete(true)}
-                  className="liquid-button h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-full text-slate-600 dark:text-slate-300 hover:text-red-500 transition-colors"
+                  className="liquid-button h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-full text-[color:var(--color-fg-muted)] hover:text-red-500 transition-colors"
                   title="删除留言"
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>delete</span>
@@ -138,7 +140,7 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
           )}
           <button
             onClick={handleClose}
-            className="liquid-button h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-full text-slate-600 dark:text-slate-300 hover:text-red-500 transition-colors"
+            className="liquid-button h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-full text-[color:var(--color-fg-muted)] hover:text-red-500 transition-colors"
           >
             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>close</span>
           </button>
@@ -155,7 +157,7 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
                 style={{ backgroundImage: `url("${post.image_url}")` }}
               />
               <div className="absolute bottom-6 left-6 right-6">
-                <div className="flex items-center gap-2 text-slate-500 text-xs font-medium uppercase tracking-wider backdrop-blur-sm bg-white/30 dark:bg-white/10 w-fit px-3 py-1 rounded-full">
+                <div className="flex items-center gap-2 text-[color:var(--color-fg-subtle)] text-xs font-medium uppercase tracking-wider backdrop-blur-sm bg-white/30 dark:bg-white/10 w-fit px-3 py-1 rounded-full">
                   <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>image</span>
                   <span>Visual</span>
                 </div>
@@ -180,16 +182,16 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
                 </div>
               </div>
               <div className="flex flex-col">
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 leading-tight">{post.author}</h3>
+                <h3 className="text-lg sm:text-xl font-bold text-[color:var(--color-fg)] leading-tight">{post.author}</h3>
                 {post.title && (
-                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">{post.title}</p>
+                  <p className="text-xs sm:text-sm text-[color:var(--color-fg-subtle)] mt-0.5">{post.title}</p>
                 )}
               </div>
             </div>
 
             {/* Content Body */}
             <div className="flex-1 mb-6 sm:mb-10">
-              <p className="text-base sm:text-lg font-light text-slate-800 dark:text-slate-200 leading-relaxed tracking-tight whitespace-pre-wrap">
+              <p className="text-base sm:text-lg font-light text-[color:var(--color-fg)] leading-relaxed tracking-tight whitespace-pre-wrap">
                 {post.content}
               </p>
             </div>
@@ -208,7 +210,7 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
             {/* Tag Picker – add existing tags from DB (admin only) */}
             {isLoggedIn && suggestedTags.length > 0 && (
               <div className="mb-4 sm:mb-6">
-                <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1">
+                <p className="text-[10px] font-semibold text-[color:var(--color-fg-subtle)] uppercase tracking-wider mb-2 flex items-center gap-1">
                   <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>label</span>
                   添加已有标签
                 </p>
@@ -233,7 +235,7 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
             )}
 
             {/* Meta */}
-            <div className="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 mb-5 sm:mb-8 pt-4 sm:pt-6 border-t border-slate-200/50 dark:border-slate-700/50 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
+            <div className="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 mb-5 sm:mb-8 pt-4 sm:pt-6 border-t border-[color:var(--color-border)] text-xs sm:text-sm text-[color:var(--color-fg-subtle)] font-medium">
               <span className="flex items-center gap-1.5">
                 <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>schedule</span>
                 {timeAgo(post.created_at)}
@@ -251,13 +253,13 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
             {/* Stats */}
             <div className="flex items-center gap-4 sm:gap-6 mb-6 sm:mb-8">
               <div className="flex flex-col">
-                <span className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">{post.likes.toLocaleString()}</span>
-                <span className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wide">Likes</span>
+                <span className="text-base sm:text-lg font-bold text-[color:var(--color-fg)]">{post.likes.toLocaleString()}</span>
+                <span className="text-[10px] sm:text-xs text-[color:var(--color-fg-subtle)] uppercase tracking-wide">Likes</span>
               </div>
               <div className="w-px h-6 sm:h-8 bg-slate-200/50 dark:bg-slate-700/50"></div>
               <div className="flex flex-col">
-                <span className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">{post.comments_count}</span>
-                <span className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wide">Replies</span>
+                <span className="text-base sm:text-lg font-bold text-[color:var(--color-fg)]">{post.comments_count}</span>
+                <span className="text-[10px] sm:text-xs text-[color:var(--color-fg-subtle)] uppercase tracking-wide">Replies</span>
               </div>
             </div>
 
@@ -269,7 +271,7 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
                 className={`group relative flex items-center justify-center gap-2 px-4 sm:px-6 h-10 sm:h-12 rounded-xl transition-all overflow-hidden border ${
                   liked
                     ? 'bg-red-50 dark:bg-red-900/20 text-red-500 border-red-200 dark:border-red-900/30 cursor-default'
-                    : 'bg-slate-100/50 dark:bg-white/5 hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-600 dark:text-slate-300 hover:text-red-500 border-transparent hover:border-red-200 dark:hover:border-red-900/30'
+                    : 'bg-slate-100/50 dark:bg-white/5 hover:bg-red-50 dark:hover:bg-red-900/20 text-[color:var(--color-fg-muted)] hover:text-red-500 border-transparent hover:border-red-200 dark:hover:border-red-900/30'
                 }`}
               >
                 <span
@@ -285,7 +287,7 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>chat_bubble</span>
                 <span className="font-semibold text-sm">Reply</span>
               </button>
-              <button className="group flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-100/50 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all">
+              <button className="group flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-100/50 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-[color:var(--color-fg-muted)] transition-all">
                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>ios_share</span>
               </button>
             </div>

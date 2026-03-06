@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext.jsx';
+import { useAuth } from './context/useAuth';
 import Navbar from './components/Navbar';
 import PostForm from './components/PostForm';
 import LoginModal from './components/LoginModal';
@@ -54,7 +55,7 @@ function AppInner() {
   }
 
   return (
-    <div className="min-h-screen font-display antialiased text-slate-900 dark:text-slate-100 bg-light-pastel relative overflow-x-hidden selection:bg-[#197fe6]/30">
+    <div className="min-h-screen font-display antialiased text-[color:var(--color-fg)] bg-light-pastel relative overflow-x-hidden selection:bg-[color:var(--color-ring)]/30">
       <BackgroundBlobs />
 
       <Navbar
@@ -77,10 +78,8 @@ function AppInner() {
           element={
             <HomePage
               searchQuery={searchQuery}
-              postFormOpen={postFormOpen}
               setPostFormOpen={setPostFormOpen}
               newPost={newPost}
-              onRequireLogin={() => setLoginModalOpen(true)}
             />
           }
         />

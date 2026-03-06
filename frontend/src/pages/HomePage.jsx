@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import PostCard from '../components/PostCard';
 import DetailModal from '../components/DetailModal';
 import PostForm from '../components/PostForm';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 
 const PAGE_SIZE = 20;
 
@@ -29,7 +29,7 @@ function saveLikedPosts(set) {
   localStorage.setItem('likedPosts', JSON.stringify([...set]));
 }
 
-export default function HomePage({ searchQuery, postFormOpen, setPostFormOpen, newPost, onRequireLogin }) {
+export default function HomePage({ searchQuery, setPostFormOpen, newPost }) {
   const { isLoggedIn, token } = useAuth();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -144,7 +144,9 @@ export default function HomePage({ searchQuery, postFormOpen, setPostFormOpen, n
       if (!res.ok) return;
       setPosts(prev => prev.filter(p => p.id !== postId));
       setSelectedPost(null);
-    } catch {}
+    } catch (err) {
+      void err;
+    }
   }
 
   function handleEdit(post) {
@@ -182,7 +184,9 @@ export default function HomePage({ searchQuery, postFormOpen, setPostFormOpen, n
       saveLikedPosts(newSet);
       setPosts(prev => prev.map(p => p.id === postId ? updated : p));
       if (selectedPost?.id === postId) setSelectedPost(updated);
-    } catch {}
+    } catch (err) {
+      void err;
+    }
   }
 
   function handleTagClick(tag) {
@@ -199,13 +203,13 @@ export default function HomePage({ searchQuery, postFormOpen, setPostFormOpen, n
     <div className="pt-28 sm:pt-32 pb-20 px-3 sm:px-6 lg:px-8 z-10 relative">
       {/* Hero Header */}
       <header className="text-center mb-10 sm:mb-16 max-w-2xl mx-auto hero-enter">
-        <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mb-3 sm:mb-4 drop-shadow-sm">
+        <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight text-[color:var(--color-fg)] mb-3 sm:mb-4 drop-shadow-sm">
         心语流转
         </h1>
-        <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 font-light max-w-lg mx-auto leading-relaxed">
+        <p className="text-base sm:text-lg text-[color:var(--color-fg-muted)] font-light max-w-lg mx-auto leading-relaxed">
         在光影交织的晶莹世界里，定格你的每一刻。
         </p>
-        <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 font-light max-w-lg mx-auto leading-relaxed">
+        <p className="text-base sm:text-lg text-[color:var(--color-fg-muted)] font-light max-w-lg mx-auto leading-relaxed">
         让连接更真挚，让灵魂更透明。
         </p>
       </header>
@@ -219,7 +223,7 @@ export default function HomePage({ searchQuery, postFormOpen, setPostFormOpen, n
               className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all border ${
                 !activeTag
                   ? 'bg-[#197fe6] text-white border-[#197fe6] shadow-sm'
-                  : 'bg-white/40 dark:bg-white/10 text-slate-600 dark:text-slate-400 border-white/50 dark:border-white/20 hover:bg-white/70 dark:hover:bg-white/20'
+                  : 'bg-white/40 dark:bg-white/10 text-[color:var(--color-fg-muted)] border-white/50 dark:border-white/20 hover:bg-white/70 dark:hover:bg-white/20'
               }`}
             >
               全部
@@ -231,7 +235,7 @@ export default function HomePage({ searchQuery, postFormOpen, setPostFormOpen, n
                 className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all border ${
                   activeTag === tag
                     ? 'bg-[#197fe6] text-white border-[#197fe6] shadow-sm'
-                    : 'bg-white/40 dark:bg-white/10 text-slate-600 dark:text-slate-400 border-white/50 dark:border-white/20 hover:bg-white/70 dark:hover:bg-white/20'
+                    : 'bg-white/40 dark:bg-white/10 text-[color:var(--color-fg-muted)] border-white/50 dark:border-white/20 hover:bg-white/70 dark:hover:bg-white/20'
                 }`}
               >
                 #{tag}
@@ -247,7 +251,7 @@ export default function HomePage({ searchQuery, postFormOpen, setPostFormOpen, n
           className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all border ${
             shuffled
               ? 'bg-purple-500 text-white border-purple-500 shadow-sm'
-              : 'bg-white/40 dark:bg-white/10 text-slate-600 dark:text-slate-400 border-white/50 dark:border-white/20 hover:bg-white/70 dark:hover:bg-white/20'
+              : 'bg-white/40 dark:bg-white/10 text-[color:var(--color-fg-muted)] border-white/50 dark:border-white/20 hover:bg-white/70 dark:hover:bg-white/20'
           }`}
         >
           <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>shuffle</span>
@@ -258,15 +262,15 @@ export default function HomePage({ searchQuery, postFormOpen, setPostFormOpen, n
       {/* Search/Filter Info */}
       {(debouncedSearch || activeTag) && (
         <div className="flex items-center justify-center gap-3 mb-6">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 dark:bg-white/10 border border-white/40 dark:border-white/20 text-sm text-slate-600 dark:text-slate-400">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 dark:bg-white/10 border border-white/40 dark:border-white/20 text-sm text-[color:var(--color-fg-muted)]">
             <span className="material-symbols-outlined text-[#197fe6]" style={{ fontSize: '16px' }}>filter_list</span>
-            {debouncedSearch && <span>搜索: <strong className="text-slate-800 dark:text-slate-200">"{debouncedSearch}"</strong></span>}
+            {debouncedSearch && <span>搜索: <strong className="text-[color:var(--color-fg)]">"{debouncedSearch}"</strong></span>}
             {activeTag && <span>标签: <strong className="text-[#197fe6]">#{activeTag}</strong></span>}
-            <span className="text-slate-400">· {posts.length} 条</span>
+            <span className="text-[color:var(--color-fg-subtle)]">· {posts.length} 条</span>
           </div>
           <button
             onClick={() => { setActiveTag(''); }}
-            className="px-3 py-2 rounded-full text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white/40 dark:hover:bg-white/10 transition-colors"
+            className="px-3 py-2 rounded-full text-xs text-[color:var(--color-fg-subtle)] hover:text-[color:var(--color-fg)] hover:bg-white/40 dark:hover:bg-white/10 transition-colors"
           >
             清除过滤
           </button>
@@ -277,7 +281,7 @@ export default function HomePage({ searchQuery, postFormOpen, setPostFormOpen, n
       {loading && (
         <div className="flex flex-col items-center justify-center py-24 gap-4">
           <div className="w-10 h-10 border-2 border-[#197fe6]/20 border-t-[#197fe6] rounded-full animate-spin" />
-          <p className="text-slate-500 dark:text-slate-400 text-sm">加载留言中...</p>
+          <p className="text-[color:var(--color-fg-subtle)] text-sm">加载留言中...</p>
         </div>
       )}
 
@@ -288,8 +292,8 @@ export default function HomePage({ searchQuery, postFormOpen, setPostFormOpen, n
             <span className="material-symbols-outlined" style={{ fontSize: '32px' }}>error_outline</span>
           </div>
           <div className="text-center">
-            <p className="text-slate-700 dark:text-slate-300 font-medium">加载失败</p>
-            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">{error}</p>
+            <p className="text-[color:var(--color-fg-muted)] font-medium">加载失败</p>
+            <p className="text-[color:var(--color-fg-subtle)] text-sm mt-1">{error}</p>
           </div>
           <button
             onClick={() => fetchPosts(debouncedSearch, activeTag, shuffled)}
@@ -304,11 +308,11 @@ export default function HomePage({ searchQuery, postFormOpen, setPostFormOpen, n
       {!loading && !error && posts.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 gap-4">
           <div className="w-20 h-20 rounded-2xl glass-card flex items-center justify-center">
-            <span className="material-symbols-outlined text-slate-400" style={{ fontSize: '40px' }}>inbox</span>
+            <span className="material-symbols-outlined text-[color:var(--color-fg-subtle)]" style={{ fontSize: '40px' }}>inbox</span>
           </div>
           <div className="text-center">
-            <p className="text-slate-700 dark:text-slate-300 font-medium text-lg">暂无留言</p>
-            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
+            <p className="text-[color:var(--color-fg-muted)] font-medium text-lg">暂无留言</p>
+            <p className="text-[color:var(--color-fg-subtle)] text-sm mt-1">
               {debouncedSearch || activeTag ? '没有找到匹配的内容' : '成为第一个发布留言的人！'}
             </p>
           </div>
@@ -358,9 +362,9 @@ export default function HomePage({ searchQuery, postFormOpen, setPostFormOpen, n
       {/* All loaded indicator */}
       {!loading && !loadingMore && !hasMore && posts.length > 0 && (
         <div className="flex items-center justify-center gap-3 py-8">
-          <div className="h-px flex-1 max-w-24 bg-slate-200 dark:bg-slate-700" />
-          <p className="text-xs text-slate-400 dark:text-slate-500">已加载全部 {posts.length} 条留言</p>
-          <div className="h-px flex-1 max-w-24 bg-slate-200 dark:bg-slate-700" />
+          <div className="h-px flex-1 max-w-24 bg-[color:var(--color-border)]" />
+          <p className="text-xs text-[color:var(--color-fg-subtle)]">已加载全部 {posts.length} 条留言</p>
+          <div className="h-px flex-1 max-w-24 bg-[color:var(--color-border)]" />
         </div>
       )}
 

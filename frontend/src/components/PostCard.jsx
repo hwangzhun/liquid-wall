@@ -50,11 +50,11 @@ function TextCard({ post, onLike, liked, onClick, onTagClick }) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2 sm:gap-3">
           <Avatar src={post.avatar_url} initials={post.initials} />
-          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{post.author}</span>
+          <span className="text-xs font-semibold text-[color:var(--color-fg-muted)]">{post.author}</span>
         </div>
-        <span className="text-xs text-slate-400">{timeAgo(post.created_at)}</span>
+        <span className="text-xs text-[color:var(--color-fg-subtle)]">{timeAgo(post.created_at)}</span>
       </div>
-      <p className="text-slate-800 dark:text-slate-200 leading-relaxed font-normal text-sm sm:text-base whitespace-pre-wrap">{post.content}</p>
+      <p className="text-[color:var(--color-fg)] leading-relaxed font-normal text-sm sm:text-base whitespace-pre-wrap">{post.content}</p>
       {post.tags?.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mt-3">
           {post.tags.map(tag => (
@@ -68,7 +68,7 @@ function TextCard({ post, onLike, liked, onClick, onTagClick }) {
           ))}
         </div>
       )}
-      <div className="mt-4 flex gap-3 text-slate-500 dark:text-slate-400">
+      <div className="mt-4 flex gap-3 text-[color:var(--color-fg-subtle)]">
         <button
           className={`flex items-center gap-1 transition-colors text-xs ${liked ? 'text-red-500 cursor-default' : 'hover:text-red-500'}`}
           onClick={handleLike}
@@ -97,18 +97,18 @@ function ImageCard({ post, onLike, liked, onClick, onTagClick }) {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
             <Avatar src={post.avatar_url} initials={post.initials} />
-            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{post.author}</span>
+            <span className="text-xs font-semibold text-[color:var(--color-fg-muted)]">{post.author}</span>
           </div>
-          <span className="text-xs text-slate-400">{timeAgo(post.created_at)}</span>
+          <span className="text-xs text-[color:var(--color-fg-subtle)]">{timeAgo(post.created_at)}</span>
         </div>
-        <p className="text-slate-800 dark:text-slate-200 leading-relaxed text-sm mb-3 whitespace-pre-wrap">{post.content}</p>
+        <p className="text-[color:var(--color-fg)] leading-relaxed text-sm mb-3 whitespace-pre-wrap">{post.content}</p>
         {post.tags?.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-4">
             {post.tags.map(tag => (
               <span
                 key={tag}
                 onClick={e => { e.stopPropagation(); onTagClick?.(tag); }}
-                className="px-2 py-1 rounded-md bg-white/40 dark:bg-white/10 text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-[#197fe6]/10 hover:text-[#197fe6] transition-colors"
+                className="px-2 py-1 rounded-md bg-white/40 dark:bg-white/10 text-[10px] font-bold text-[color:var(--color-fg-subtle)] uppercase tracking-wider cursor-pointer hover:bg-[#197fe6]/10 hover:text-[#197fe6] transition-colors"
               >
                 #{tag}
               </span>
@@ -116,14 +116,14 @@ function ImageCard({ post, onLike, liked, onClick, onTagClick }) {
           </div>
         )}
         <div className="pt-3 border-t border-white/30 dark:border-white/10 flex justify-between items-center">
-          <div className="flex gap-4 text-slate-500 dark:text-slate-400">
+          <div className="flex gap-4 text-[color:var(--color-fg-subtle)]">
             <button onClick={handleLike} className={`transition-colors flex items-center gap-1 text-xs ${liked ? 'text-red-500 cursor-default' : 'hover:text-red-500'}`}>
               <span className={`material-symbols-outlined ${popping ? 'like-pop' : ''}`} style={{ fontSize: '18px', fontVariationSettings: liked ? "'FILL' 1" : "'FILL' 0" }}>favorite</span>
               {post.likes}
             </button>
             <span className="material-symbols-outlined cursor-pointer hover:text-[#197fe6] transition-colors" style={{ fontSize: '18px' }}>share</span>
           </div>
-          <span className="text-[10px] text-slate-400 font-medium">Read more</span>
+          <span className="text-[10px] text-[color:var(--color-fg-subtle)] font-medium">Read more</span>
         </div>
       </div>
     </div>
@@ -136,19 +136,19 @@ function QuoteCard({ post, onLike, liked, onClick }) {
   return (
     <div className="glass-card rounded-2xl p-6 sm:p-8 bg-gradient-to-br from-white/30 to-white/10 dark:from-white/10 dark:to-white/5" onClick={onClick}>
       <span className="material-symbols-outlined text-[#197fe6]/40 mb-4" style={{ fontSize: '32px' }}>format_quote</span>
-      <p className="text-xl sm:text-2xl font-serif italic text-slate-800 dark:text-slate-200 leading-snug mb-6 whitespace-pre-wrap">{post.content}</p>
+      <p className="text-xl sm:text-2xl font-serif italic text-[color:var(--color-fg)] leading-snug mb-6 whitespace-pre-wrap">{post.content}</p>
       <div className="flex items-center justify-between">
         <button
           onClick={handleLike}
-          className={`flex items-center gap-1 transition-colors text-xs ${liked ? 'text-red-500 cursor-default' : 'text-slate-400 hover:text-red-500'}`}
+          className={`flex items-center gap-1 transition-colors text-xs ${liked ? 'text-red-500 cursor-default' : 'text-[color:var(--color-fg-subtle)] hover:text-red-500'}`}
         >
           <span className={`material-symbols-outlined ${popping ? 'like-pop' : ''}`} style={{ fontSize: '16px', fontVariationSettings: liked ? "'FILL' 1" : "'FILL' 0" }}>favorite</span>
           {post.likes}
         </button>
         <div className="flex items-center gap-3">
           <div className="text-right">
-            <p className="text-xs font-bold text-slate-900 dark:text-slate-100">{post.author}</p>
-            <p className="text-[10px] text-slate-500">{post.title}</p>
+            <p className="text-xs font-bold text-[color:var(--color-fg)]">{post.author}</p>
+            <p className="text-[10px] text-[color:var(--color-fg-subtle)]">{post.title}</p>
           </div>
           <Avatar src={post.avatar_url} initials={post.initials} size={10} className="grayscale opacity-80" />
         </div>
@@ -166,12 +166,12 @@ function ArticleCard({ post, onLike, liked, onClick, onTagClick }) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <Avatar src={post.avatar_url} initials={post.initials} />
-          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{post.author}</span>
+          <span className="text-xs font-semibold text-[color:var(--color-fg-muted)]">{post.author}</span>
         </div>
-        <span className="text-xs text-slate-400">{timeAgo(post.created_at)}</span>
+        <span className="text-xs text-[color:var(--color-fg-subtle)]">{timeAgo(post.created_at)}</span>
       </div>
-      <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base sm:text-lg mb-2">{post.title}</h3>
-      <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed mb-4 whitespace-pre-wrap">{post.content}</p>
+      <h3 className="font-bold text-[color:var(--color-fg)] text-base sm:text-lg mb-2">{post.title}</h3>
+      <p className="text-[color:var(--color-fg-muted)] text-sm leading-relaxed mb-4 whitespace-pre-wrap">{post.content}</p>
       {post.tags?.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-3">
           {post.tags.map(tag => (
@@ -188,7 +188,7 @@ function ArticleCard({ post, onLike, liked, onClick, onTagClick }) {
       <div className="w-full h-1 bg-slate-200/50 dark:bg-slate-700/50 rounded-full overflow-hidden mb-4">
         <div className="h-full bg-[#197fe6]/60 rounded-full" style={{ width: `${progress}%` }}></div>
       </div>
-      <div className="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400">
+      <div className="flex justify-between items-center text-xs text-[color:var(--color-fg-subtle)]">
         <div className="flex items-center gap-3">
           <span>3 min read</span>
           <button onClick={handleLike} className={`flex items-center gap-1 transition-colors ${liked ? 'text-red-500 cursor-default' : 'hover:text-red-500'}`}>
@@ -215,12 +215,12 @@ function StatusCard({ post, onLike, liked, onClick }) {
         <span className="material-symbols-outlined">check_circle</span>
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-medium text-slate-900 dark:text-slate-100 truncate">{post.title}</p>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{post.content}</p>
+        <p className="font-medium text-[color:var(--color-fg)] truncate">{post.title}</p>
+        <p className="text-xs text-[color:var(--color-fg-subtle)] mt-0.5">{post.content}</p>
       </div>
       <button
         onClick={handleLike}
-        className={`flex items-center gap-1 transition-colors text-xs shrink-0 ${liked ? 'text-red-500 cursor-default' : 'text-slate-400 hover:text-red-500'}`}
+        className={`flex items-center gap-1 transition-colors text-xs shrink-0 ${liked ? 'text-red-500 cursor-default' : 'text-[color:var(--color-fg-subtle)] hover:text-red-500'}`}
       >
         <span className={`material-symbols-outlined ${popping ? 'like-pop' : ''}`} style={{ fontSize: '16px', fontVariationSettings: liked ? "'FILL' 1" : "'FILL' 0" }}>favorite</span>
         {post.likes}
@@ -237,7 +237,7 @@ function MediaCard({ post, onLike, liked, onClick }) {
       <div className="h-36 sm:h-40 bg-slate-200 relative">
         <img src={post.image_url} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Media" />
         {post.title && (
-          <div className="absolute top-3 right-3 bg-white/80 backdrop-blur-md px-2 py-1 rounded-md text-[10px] font-bold text-slate-800 shadow-sm flex items-center gap-1">
+          <div className="absolute top-3 right-3 bg-white/80 dark:bg-black/30 backdrop-blur-md px-2 py-1 rounded-md text-[10px] font-bold text-[color:var(--color-fg)] shadow-sm flex items-center gap-1">
             <span className="material-symbols-outlined text-red-500" style={{ fontSize: '12px' }}>location_on</span> {post.title}
           </div>
         )}
@@ -246,14 +246,14 @@ function MediaCard({ post, onLike, liked, onClick }) {
         <div className="flex items-center gap-3 mb-3">
           <Avatar src={post.avatar_url} initials={post.initials} />
           <div>
-            <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">{post.author}</p>
-            <p className="text-[10px] text-slate-500">Travelling</p>
+            <p className="text-xs font-semibold text-[color:var(--color-fg-muted)]">{post.author}</p>
+            <p className="text-[10px] text-[color:var(--color-fg-subtle)]">Travelling</p>
           </div>
         </div>
-        <p className="text-slate-800 dark:text-slate-200 text-sm mb-3 whitespace-pre-wrap">{post.content}</p>
+        <p className="text-[color:var(--color-fg)] text-sm mb-3 whitespace-pre-wrap">{post.content}</p>
         <button
           onClick={handleLike}
-          className={`flex items-center gap-1 transition-colors text-xs ${liked ? 'text-red-500 cursor-default' : 'text-slate-400 hover:text-red-500'}`}
+          className={`flex items-center gap-1 transition-colors text-xs ${liked ? 'text-red-500 cursor-default' : 'text-[color:var(--color-fg-subtle)] hover:text-red-500'}`}
         >
           <span className={`material-symbols-outlined ${popping ? 'like-pop' : ''}`} style={{ fontSize: '16px', fontVariationSettings: liked ? "'FILL' 1" : "'FILL' 0" }}>favorite</span>
           {post.likes}
@@ -275,19 +275,19 @@ function PromptCard({ post, onLike, liked, onClick, onTagClick }) {
         {post.tags?.[0] && (
           <span
             onClick={e => { e.stopPropagation(); onTagClick?.(post.tags[0]); }}
-            className="text-xs text-slate-500 dark:text-slate-400 bg-white/40 dark:bg-white/10 px-2 py-1 rounded-full cursor-pointer hover:bg-[#197fe6]/10 hover:text-[#197fe6] transition-colors"
+            className="text-xs text-[color:var(--color-fg-subtle)] bg-white/40 dark:bg-white/10 px-2 py-1 rounded-full cursor-pointer hover:bg-[#197fe6]/10 hover:text-[#197fe6] transition-colors"
           >
             {post.tags[0]}
           </span>
         )}
       </div>
-      <h4 className="font-bold text-slate-900 dark:text-slate-100 mb-2 text-sm sm:text-base">{post.title}</h4>
-      <p className="text-slate-700 dark:text-slate-300 text-sm mb-4 whitespace-pre-wrap">{post.content}</p>
+      <h4 className="font-bold text-[color:var(--color-fg)] mb-2 text-sm sm:text-base">{post.title}</h4>
+      <p className="text-[color:var(--color-fg-muted)] text-sm mb-4 whitespace-pre-wrap">{post.content}</p>
       <div className="flex -space-x-2 overflow-hidden mb-3">
         {[1, 2, 3].map(i => (
           <img key={i} className="inline-block h-5 w-5 sm:h-6 sm:w-6 rounded-full ring-2 ring-white dark:ring-slate-800" src={`https://i.pravatar.cc/150?u=${post.id}${i}`} alt="Avatar" />
         ))}
-        <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-full ring-2 ring-white dark:ring-slate-800 bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-[8px] font-bold text-slate-500 dark:text-slate-300">
+        <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-full ring-2 ring-[color:var(--color-border)] bg-[color:var(--color-surface-2)] flex items-center justify-center text-[8px] font-bold text-[color:var(--color-fg-subtle)]">
           +{post.comments_count}
         </div>
       </div>
@@ -300,7 +300,7 @@ function PromptCard({ post, onLike, liked, onClick, onTagClick }) {
           className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors text-xs ${
             liked
               ? 'bg-red-50 dark:bg-red-900/20 text-red-500 cursor-default'
-              : 'bg-white/50 dark:bg-white/10 hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-500'
+              : 'bg-white/50 dark:bg-white/10 hover:bg-red-50 dark:hover:bg-red-900/20 text-[color:var(--color-fg-subtle)] hover:text-red-500'
           }`}
         >
           <span className={`material-symbols-outlined ${popping ? 'like-pop' : ''}`} style={{ fontSize: '14px', fontVariationSettings: liked ? "'FILL' 1" : "'FILL' 0" }}>favorite</span>
@@ -319,11 +319,11 @@ function SimpleCard({ post, onLike, liked, onClick, onTagClick }) {
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <Avatar src={post.avatar_url} initials={post.initials} size={6} />
-          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{post.author}</span>
+          <span className="text-xs font-semibold text-[color:var(--color-fg-muted)]">{post.author}</span>
         </div>
-        <span className="text-[10px] text-slate-400">{timeAgo(post.created_at)}</span>
+        <span className="text-[10px] text-[color:var(--color-fg-subtle)]">{timeAgo(post.created_at)}</span>
       </div>
-      <p className="text-slate-600 dark:text-slate-400 text-sm italic whitespace-pre-wrap">{post.content}</p>
+      <p className="text-[color:var(--color-fg-muted)] text-sm italic whitespace-pre-wrap">{post.content}</p>
       {post.tags?.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mt-3">
           {post.tags.map(tag => (
@@ -337,7 +337,7 @@ function SimpleCard({ post, onLike, liked, onClick, onTagClick }) {
           ))}
         </div>
       )}
-      <div className="mt-3 flex items-center gap-3 text-slate-500 dark:text-slate-400">
+      <div className="mt-3 flex items-center gap-3 text-[color:var(--color-fg-subtle)]">
         <button
           onClick={handleLike}
           className={`flex items-center gap-1 transition-colors text-xs ${liked ? 'text-red-500 cursor-default' : 'hover:text-red-500'}`}

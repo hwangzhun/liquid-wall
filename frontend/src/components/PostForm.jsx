@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 
 const POST_TYPES = [
   { value: 'text', label: '💬 文字', icon: 'chat' },
@@ -123,11 +123,11 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
             <div className="w-9 h-9 rounded-full bg-[#197fe6]/10 text-[#197fe6] flex items-center justify-center">
               <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>edit_note</span>
             </div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{isEditing ? '编辑留言' : '发布留言'}</h2>
+            <h2 className="text-lg font-bold text-[color:var(--color-fg)]">{isEditing ? '编辑留言' : '发布留言'}</h2>
           </div>
           <button
             onClick={handleClose}
-            className="liquid-button h-9 w-9 flex items-center justify-center rounded-full text-slate-500 dark:text-slate-400 hover:text-red-500 transition-colors"
+            className="liquid-button h-9 w-9 flex items-center justify-center rounded-full text-[color:var(--color-fg-subtle)] hover:text-red-500 transition-colors"
           >
             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>close</span>
           </button>
@@ -137,7 +137,7 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
         <form onSubmit={handleSubmit} className="px-6 sm:px-8 py-5 sm:py-6 flex flex-col gap-4">
           {/* Type Selector */}
           <div>
-            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 uppercase tracking-wider">留言类型</label>
+            <label className="block text-xs font-semibold text-[color:var(--color-fg-muted)] mb-2 uppercase tracking-wider">留言类型</label>
             <div className="flex flex-wrap gap-2">
               {POST_TYPES.map(pt => (
                 <button
@@ -147,7 +147,7 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
                   className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
                     type === pt.value
                       ? 'bg-[#197fe6] text-white border-[#197fe6] shadow-sm shadow-[#197fe6]/30'
-                      : 'bg-white/40 dark:bg-white/10 text-slate-600 dark:text-slate-400 border-white/50 dark:border-white/20 hover:bg-white/70 dark:hover:bg-white/20'
+                      : 'bg-white/40 dark:bg-white/10 text-[color:var(--color-fg-muted)] border-white/50 dark:border-white/20 hover:bg-white/70 dark:hover:bg-white/20'
                   }`}
                 >
                   {pt.label}
@@ -158,7 +158,7 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
 
           {/* Author */}
           <div>
-            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-[color:var(--color-fg-muted)] mb-1.5 uppercase tracking-wider">
               您的昵称 {!isEditing && <span className="text-red-400">*</span>}
             </label>
             <input
@@ -168,9 +168,9 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
               placeholder="输入昵称..."
               maxLength={50}
               readOnly={isEditing}
-              className={`w-full px-4 py-2.5 rounded-xl border text-slate-800 dark:text-slate-200 placeholder-slate-400 text-sm outline-none transition-all ${
+              className={`w-full px-4 py-2.5 rounded-xl border text-[color:var(--color-fg)] placeholder-[color:var(--color-fg-subtle)] text-sm outline-none transition-all ${
                 isEditing
-                  ? 'bg-slate-100/50 dark:bg-white/5 border-white/20 dark:border-white/10 text-slate-500 dark:text-slate-500 cursor-not-allowed'
+                  ? 'bg-slate-100/50 dark:bg-white/5 border-white/20 dark:border-white/10 text-[color:var(--color-fg-subtle)] cursor-not-allowed'
                   : 'bg-white/50 dark:bg-white/10 border-white/50 dark:border-white/20 focus:border-[#197fe6]/50 focus:ring-2 focus:ring-[#197fe6]/20'
               }`}
             />
@@ -179,7 +179,7 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
           {/* Title (conditional) */}
           {needsTitle && (
             <div>
-              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-[color:var(--color-fg-muted)] mb-1.5 uppercase tracking-wider">
                 标题
               </label>
               <input
@@ -188,14 +188,14 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
                 onChange={e => setTitle(e.target.value)}
                 placeholder={type === 'quote' ? '人物身份（如：诗人、思想家）' : '文章标题...'}
                 maxLength={100}
-                className="w-full px-4 py-2.5 rounded-xl bg-white/50 dark:bg-white/10 border border-white/50 dark:border-white/20 text-slate-800 dark:text-slate-200 placeholder-slate-400 text-sm outline-none focus:border-[#197fe6]/50 focus:ring-2 focus:ring-[#197fe6]/20 transition-all"
+                className="w-full px-4 py-2.5 rounded-xl bg-white/50 dark:bg-white/10 border border-white/50 dark:border-white/20 text-[color:var(--color-fg)] placeholder-[color:var(--color-fg-subtle)] text-sm outline-none focus:border-[#197fe6]/50 focus:ring-2 focus:ring-[#197fe6]/20 transition-all"
               />
             </div>
           )}
 
           {/* Content */}
           <div>
-            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-[color:var(--color-fg-muted)] mb-1.5 uppercase tracking-wider">
               内容 <span className="text-red-400">*</span>
             </label>
             <textarea
@@ -204,24 +204,24 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
               placeholder={type === 'quote' ? '"在此输入您的名言..."' : '分享您的想法...'}
               maxLength={1000}
               rows={5}
-              className="w-full px-4 py-2.5 rounded-xl bg-white/50 dark:bg-white/10 border border-white/50 dark:border-white/20 text-slate-800 dark:text-slate-200 placeholder-slate-400 text-sm outline-none focus:border-[#197fe6]/50 focus:ring-2 focus:ring-[#197fe6]/20 transition-all resize-none"
+              className="w-full px-4 py-2.5 rounded-xl bg-white/50 dark:bg-white/10 border border-white/50 dark:border-white/20 text-[color:var(--color-fg)] placeholder-[color:var(--color-fg-subtle)] text-sm outline-none focus:border-[#197fe6]/50 focus:ring-2 focus:ring-[#197fe6]/20 transition-all resize-none"
             />
             <div className="flex justify-end mt-1">
-              <span className="text-[10px] text-slate-400">{content.length}/1000</span>
+              <span className="text-[10px] text-[color:var(--color-fg-subtle)]">{content.length}/1000</span>
             </div>
           </div>
 
           {/* Tags */}
           <div>
-            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
-              标签 <span className="text-slate-400 font-normal normal-case">（用逗号或空格分隔）</span>
+            <label className="block text-xs font-semibold text-[color:var(--color-fg-muted)] mb-1.5 uppercase tracking-wider">
+              标签 <span className="text-[color:var(--color-fg-subtle)] font-normal normal-case">（用逗号或空格分隔）</span>
             </label>
             <input
               type="text"
               value={tagsInput}
               onChange={e => setTagsInput(e.target.value)}
               placeholder="设计, CSS, 灵感..."
-              className="w-full px-4 py-2.5 rounded-xl bg-white/50 dark:bg-white/10 border border-white/50 dark:border-white/20 text-slate-800 dark:text-slate-200 placeholder-slate-400 text-sm outline-none focus:border-[#197fe6]/50 focus:ring-2 focus:ring-[#197fe6]/20 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-white/50 dark:bg-white/10 border border-white/50 dark:border-white/20 text-[color:var(--color-fg)] placeholder-[color:var(--color-fg-subtle)] text-sm outline-none focus:border-[#197fe6]/50 focus:ring-2 focus:ring-[#197fe6]/20 transition-all"
             />
             {/* Tag Preview */}
             {tagsInput.trim() && (
@@ -240,7 +240,7 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
               if (suggestions.length === 0) return null;
               return (
                 <div className="mt-2.5">
-                  <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                  <p className="text-[10px] font-semibold text-[color:var(--color-fg-subtle)] uppercase tracking-wider mb-1.5 flex items-center gap-1">
                     <span className="material-symbols-outlined" style={{ fontSize: '11px' }}>label</span>
                     选择已有标签
                   </p>
@@ -278,7 +278,7 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 py-2.5 rounded-xl bg-slate-100/70 dark:bg-white/10 text-slate-600 dark:text-slate-400 text-sm font-semibold hover:bg-slate-200 dark:hover:bg-white/20 transition-all"
+              className="flex-1 py-2.5 rounded-xl bg-slate-100/70 dark:bg-white/10 text-[color:var(--color-fg-muted)] text-sm font-semibold hover:bg-slate-200 dark:hover:bg-white/20 transition-all"
             >
               取消
             </button>

@@ -6,9 +6,19 @@
     "dev:backend": "cd backend && node src/server.js",
     "dev:frontend": "cd frontend && npm run dev",
     "install:all": "cd backend && npm install && cd ../frontend && npm install",
-    "build": "cd frontend && npm run build"
+    "build": "cd frontend && npm run build",
+    "server": "npm start --prefix backend",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
   },
-  "keywords": ["glassmorphism", "message-wall", "react", "express"],
+  "keywords": [
+    "glassmorphism",
+    "message-wall",
+    "react",
+    "express"
+  ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^9.2.1"
+  }
 }

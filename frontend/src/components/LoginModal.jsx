@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 
 export default function LoginModal({ onClose }) {
   const { login } = useAuth();
@@ -63,11 +63,11 @@ export default function LoginModal({ onClose }) {
             <div className="w-9 h-9 rounded-full bg-[#197fe6]/10 text-[#197fe6] flex items-center justify-center">
               <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>lock</span>
             </div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">管理员登录</h2>
+            <h2 className="text-lg font-bold text-[color:var(--color-fg)]">管理员登录</h2>
           </div>
           <button
             onClick={handleClose}
-            className="liquid-button h-9 w-9 flex items-center justify-center rounded-full text-slate-500 dark:text-slate-400 hover:text-red-500 transition-colors"
+            className="liquid-button h-9 w-9 flex items-center justify-center rounded-full text-[color:var(--color-fg-subtle)] hover:text-red-500 transition-colors"
           >
             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>close</span>
           </button>
@@ -75,12 +75,12 @@ export default function LoginModal({ onClose }) {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="px-6 sm:px-8 py-6 flex flex-col gap-4">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-[color:var(--color-fg-subtle)]">
             登录后即可发布和管理留言。
           </p>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-[color:var(--color-fg-muted)] mb-1.5 uppercase tracking-wider">
               密码
             </label>
             <input
@@ -89,7 +89,7 @@ export default function LoginModal({ onClose }) {
               value={password}
               onChange={e => setPassword(e.target.value)}
               placeholder="输入管理员密码..."
-              className="w-full px-4 py-2.5 rounded-xl bg-white/50 dark:bg-white/10 border border-white/50 dark:border-white/20 text-slate-800 dark:text-slate-200 placeholder-slate-400 text-sm outline-none focus:border-[#197fe6]/50 focus:ring-2 focus:ring-[#197fe6]/20 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-white/50 dark:bg-white/10 border border-white/50 dark:border-white/20 text-[color:var(--color-fg)] placeholder-[color:var(--color-fg-subtle)] text-sm outline-none focus:border-[#197fe6]/50 focus:ring-2 focus:ring-[#197fe6]/20 transition-all"
             />
           </div>
 
@@ -104,7 +104,7 @@ export default function LoginModal({ onClose }) {
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 py-2.5 rounded-xl bg-slate-100/70 dark:bg-white/10 text-slate-600 dark:text-slate-400 text-sm font-semibold hover:bg-slate-200 dark:hover:bg-white/20 transition-all"
+              className="flex-1 py-2.5 rounded-xl bg-slate-100/70 dark:bg-white/10 text-[color:var(--color-fg-muted)] text-sm font-semibold hover:bg-slate-200 dark:hover:bg-white/20 transition-all"
             >
               取消
             </button>

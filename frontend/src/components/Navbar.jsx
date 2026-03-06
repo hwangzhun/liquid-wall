@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 
 export default function Navbar({ onSearch, onOpenPost, onOpenLogin, darkMode, onToggleDark }) {
   const navigate = useNavigate();
@@ -47,7 +47,7 @@ export default function Navbar({ onSearch, onOpenPost, onOpenLogin, darkMode, on
             onClick={() => navigate('/')}
           >
             <img src="/favicon.png" alt="Liquid Wall" className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl object-cover" />
-            <span className="font-bold text-base sm:text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-slate-100 dark:to-slate-400">
+            <span className="font-bold text-base sm:text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-[color:var(--color-fg)] to-[color:var(--color-fg-muted)]">
             流光语壁
             </span>
           </div>
@@ -61,7 +61,7 @@ export default function Navbar({ onSearch, onOpenPost, onOpenLogin, darkMode, on
             >
               {searchOpen ? (
                 <div className="flex items-center gap-2 bg-white/60 dark:bg-white/10 rounded-full px-3 py-1.5 border border-white/50 backdrop-blur-sm w-full">
-                  <span className="material-symbols-outlined text-slate-500 dark:text-slate-400 shrink-0" style={{ fontSize: '16px' }}>search</span>
+                  <span className="material-symbols-outlined text-[color:var(--color-fg-subtle)] shrink-0" style={{ fontSize: '16px' }}>search</span>
                   <input
                     autoFocus
                     type="text"
@@ -69,11 +69,11 @@ export default function Navbar({ onSearch, onOpenPost, onOpenLogin, darkMode, on
                     onChange={handleSearch}
                     onKeyDown={handleSearchKeyDown}
                     placeholder="搜索留言..."
-                    className="outline-none bg-transparent text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 flex-1 min-w-0"
+                    className="outline-none bg-transparent text-sm text-[color:var(--color-fg)] placeholder-[color:var(--color-fg-subtle)] flex-1 min-w-0"
                   />
                   <button
                     onClick={() => { setSearchOpen(false); setSearchValue(''); onSearch?.(''); }}
-                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 shrink-0 transition-colors"
+                    className="text-[color:var(--color-fg-subtle)] hover:text-[color:var(--color-fg-muted)] shrink-0 transition-colors"
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>close</span>
                   </button>
@@ -81,7 +81,7 @@ export default function Navbar({ onSearch, onOpenPost, onOpenLogin, darkMode, on
               ) : (
                 <button
                   onClick={() => setSearchOpen(true)}
-                  className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/40 dark:bg-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/20 hover:text-[#197fe6] transition-all backdrop-blur-sm"
+                  className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/40 dark:bg-white/10 text-[color:var(--color-fg-muted)] hover:bg-white dark:hover:bg-white/20 hover:text-[#197fe6] transition-all backdrop-blur-sm"
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>search</span>
                 </button>
@@ -91,7 +91,7 @@ export default function Navbar({ onSearch, onOpenPost, onOpenLogin, darkMode, on
             {/* Dark Mode Toggle */}
             <button
               onClick={onToggleDark}
-              className="hidden sm:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/40 dark:bg-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/20 transition-all backdrop-blur-sm"
+              className="hidden sm:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/40 dark:bg-white/10 text-[color:var(--color-fg-muted)] hover:bg-white dark:hover:bg-white/20 transition-all backdrop-blur-sm"
               title={darkMode ? '切换浅色模式' : '切换深色模式'}
             >
               <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
@@ -112,7 +112,7 @@ export default function Navbar({ onSearch, onOpenPost, onOpenLogin, darkMode, on
                 </button>
                 <button
                   onClick={logout}
-                  className="hidden sm:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/40 dark:bg-white/10 text-slate-700 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 transition-all backdrop-blur-sm"
+                  className="hidden sm:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/40 dark:bg-white/10 text-[color:var(--color-fg-muted)] hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 transition-all backdrop-blur-sm"
                   title="退出登录"
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>logout</span>
@@ -121,7 +121,7 @@ export default function Navbar({ onSearch, onOpenPost, onOpenLogin, darkMode, on
             ) : (
               <button
                 onClick={onOpenLogin}
-                className="hidden sm:flex items-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 bg-white/40 dark:bg-white/10 text-slate-700 dark:text-slate-300 border border-white/50 dark:border-white/20 rounded-full text-sm font-semibold hover:bg-white dark:hover:bg-white/20 transition-all backdrop-blur-sm"
+                className="hidden sm:flex items-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 bg-white/40 dark:bg-white/10 text-[color:var(--color-fg-muted)] border border-white/50 dark:border-white/20 rounded-full text-sm font-semibold hover:bg-white dark:hover:bg-white/20 transition-all backdrop-blur-sm"
               >
                 <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>lock</span>
                 <span>登录</span>
@@ -131,7 +131,7 @@ export default function Navbar({ onSearch, onOpenPost, onOpenLogin, darkMode, on
             {/* Mobile Menu Button */}
             <button
               onClick={openDrawer}
-              className="flex md:hidden items-center justify-center w-9 h-9 rounded-full bg-white/40 dark:bg-white/10 text-slate-700 dark:text-slate-300"
+              className="flex md:hidden items-center justify-center w-9 h-9 rounded-full bg-white/40 dark:bg-white/10 text-[color:var(--color-fg-muted)]"
             >
               <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>menu</span>
             </button>
@@ -148,49 +148,49 @@ export default function Navbar({ onSearch, onOpenPost, onOpenLogin, darkMode, on
             onClick={closeDrawer}
           />
           {/* Panel */}
-          <div className={`relative ml-auto w-72 h-full bg-white/90 dark:bg-slate-900/95 backdrop-blur-xl border-l border-white/30 dark:border-white/10 shadow-2xl flex flex-col p-6 pt-10 gap-2 ${drawerClosing ? 'drawer-exit' : 'drawer-enter'}`}>
+          <div className={`relative ml-auto w-72 h-full bg-[color:var(--color-surface)] backdrop-blur-xl border-l border-[color:var(--color-border)] shadow-2xl flex flex-col p-6 pt-10 gap-2 ${drawerClosing ? 'drawer-exit' : 'drawer-enter'}`}>
             <button
-              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-[color:var(--color-surface-2)] flex items-center justify-center text-[color:var(--color-fg-muted)] hover:opacity-90 transition-colors"
               onClick={closeDrawer}
             >
               <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>close</span>
             </button>
 
-            <div className="flex items-center gap-3 mb-4 pb-4 border-b border-slate-200 dark:border-slate-700">
+            <div className="flex items-center gap-3 mb-4 pb-4 border-b border-[color:var(--color-border)]">
               <img src="/favicon.png" alt="Liquid Wall" className="w-9 h-9 rounded-xl object-cover" />
-              <span className="font-bold text-lg text-slate-900 dark:text-slate-100">Liquid Wall</span>
+              <span className="font-bold text-lg text-[color:var(--color-fg)]">Liquid Wall</span>
             </div>
 
-            <Link to="/" onClick={closeDrawer} className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium transition-colors">
+            <Link to="/" onClick={closeDrawer} className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-[color:var(--color-surface-2)] text-[color:var(--color-fg)] font-medium transition-colors">
               <span className="material-symbols-outlined text-[#197fe6]">home</span> Home
             </Link>
 
             {isLoggedIn && (
               <button
                 onClick={() => { closeDrawer(); onOpenPost(); }}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-[color:var(--color-surface-2)] text-[color:var(--color-fg-muted)] transition-colors"
               >
                 <span className="material-symbols-outlined text-[#197fe6]">add_circle</span> 发布留言
               </button>
             )}
 
-            <div className="mt-auto pt-4 border-t border-slate-200 dark:border-slate-700 flex flex-col gap-2">
+            <div className="mt-auto pt-4 border-t border-[color:var(--color-border)] flex flex-col gap-2">
               {/* Mobile Search */}
-              <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 rounded-xl px-3 py-2">
-                <span className="material-symbols-outlined text-slate-400" style={{ fontSize: '16px' }}>search</span>
+              <div className="flex items-center gap-2 bg-[color:var(--color-surface-2)] rounded-xl px-3 py-2">
+                <span className="material-symbols-outlined text-[color:var(--color-fg-subtle)]" style={{ fontSize: '16px' }}>search</span>
                 <input
                   type="text"
                   value={searchValue}
                   onChange={handleSearch}
                   placeholder="搜索留言..."
-                  className="outline-none bg-transparent text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 flex-1"
+                  className="outline-none bg-transparent text-sm text-[color:var(--color-fg)] placeholder-[color:var(--color-fg-subtle)] flex-1"
                 />
               </div>
 
               {/* Dark Mode Toggle Mobile */}
               <button
                 onClick={() => { onToggleDark(); closeDrawer(); }}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-[color:var(--color-surface-2)] text-[color:var(--color-fg-muted)] transition-colors"
               >
                 <span className="material-symbols-outlined text-amber-500">{darkMode ? 'light_mode' : 'dark_mode'}</span>
                 {darkMode ? '切换浅色模式' : '切换深色模式'}
@@ -208,7 +208,7 @@ export default function Navbar({ onSearch, onOpenPost, onOpenLogin, darkMode, on
               ) : (
                 <button
                   onClick={() => { closeDrawer(); onOpenLogin?.(); }}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors"
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-[color:var(--color-surface-2)] text-[color:var(--color-fg-muted)] transition-colors"
                 >
                   <span className="material-symbols-outlined text-[#197fe6]">lock</span>
                   管理员登录

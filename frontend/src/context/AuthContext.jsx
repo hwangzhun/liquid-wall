@@ -1,6 +1,5 @@
-import { createContext, useContext, useState, useCallback } from 'react';
-
-const AuthContext = createContext(null);
+import { useState, useCallback } from 'react';
+import { AuthContext } from './authContextRef';
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem('liquid-wall-token'));
@@ -22,10 +21,4 @@ export function AuthProvider({ children }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-  return ctx;
 }
