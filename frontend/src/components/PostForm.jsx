@@ -111,7 +111,7 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-y-auto">
       {/* Backdrop */}
       <div
-        className={`absolute inset-0 bg-slate-50/30 dark:bg-slate-900/50 backdrop-blur-md ${closing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'}`}
+        className={`absolute inset-0 bg-slate-50/30 dark:bg-black/50 backdrop-blur-md ${closing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'}`}
         onClick={handleClose}
       />
 
@@ -227,7 +227,7 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
             {tagsInput.trim() && (
               <div className="flex flex-wrap gap-1.5 mt-2">
                 {tagsInput.split(/[,，\s]+/).map(t => t.trim().replace(/^#/, '')).filter(Boolean).map(tag => (
-                  <span key={tag} className="px-2 py-0.5 rounded-full bg-[#197fe6]/10 text-[#197fe6] text-[10px] font-medium">
+                  <span key={tag} className="px-2 py-0.5 rounded-full bg-[#197fe6]/10 dark:bg-[#58a6ff]/25 text-[#197fe6] dark:text-[#ffffff] text-[10px] font-medium">
                     #{tag}
                   </span>
                 ))}
@@ -253,7 +253,7 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
                           const trimmed = tagsInput.trim();
                           setTagsInput(trimmed ? `${trimmed}, ${tag}` : tag);
                         }}
-                        className="flex items-center gap-0.5 px-2.5 py-1 rounded-full border border-dashed border-[#197fe6]/40 text-[#197fe6]/60 text-[11px] font-medium hover:bg-[#197fe6]/10 hover:border-[#197fe6]/70 hover:text-[#197fe6] transition-all"
+                        className="flex items-center gap-0.5 px-2.5 py-1 rounded-full border border-dashed border-[#197fe6]/40 dark:border-[#58a6ff]/35 text-[#197fe6]/60 dark:text-[#58a6ff]/70 text-[11px] font-medium hover:bg-[#197fe6]/10 dark:hover:bg-[#58a6ff]/15 hover:border-[#197fe6]/70 dark:hover:border-[#58a6ff]/50 hover:text-[#197fe6] dark:hover:text-[#58a6ff] transition-all"
                       >
                         <span className="material-symbols-outlined" style={{ fontSize: '11px' }}>add</span>
                         #{tag}

@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Tailwind v4: dark: variant 响应 .dark 类，而非仅系统偏好 */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-primary: #197fe6;
   --color-background-light: #f6f7f8;
@@ -16,21 +19,25 @@
   --font-family-display: DongQingHeiTi, Inter, sans-serif;
 }
 
-/* Dark mode: high-contrast semantic tokens */
+/* Dark mode: 高对比度语义色，略微柔和 */
 .dark {
-  --color-bg: #0d1117;
-  --color-surface: #161b22;
-  --color-surface-2: #21262d;
-  --color-fg: #f0f6fc;
-  --color-fg-muted: #b1bac4;
-  --color-fg-subtle: #8b949e;
-  --color-border: #30363d;
+  --color-bg: #0b0f14;
+  --color-surface: #141920;
+  --color-surface-2: #1c232e;
+  --color-fg: #e6edf3;
+  --color-fg-muted: #8b99a6;
+  --color-fg-subtle: #6e7b88;
+  --color-border: #2d3640;
   --color-ring: #58a6ff;
 }
 
 /* ===== Global smooth transitions ===== */
 :root {
   transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+.dark ::selection {
+  background: rgba(88, 166, 255, 0.25);
 }
 
 /* ===== Keyframes ===== */
@@ -144,11 +151,13 @@
 .dark .glass-panel {
   background: linear-gradient(
     135deg,
-    rgba(22, 27, 34, 0.78),
-    rgba(22, 27, 34, 0.46)
+    rgba(20, 25, 33, 0.9),
+    rgba(28, 35, 46, 0.7)
   );
-  border: 1px solid rgba(48, 54, 61, 0.95);
-  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.35);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(65, 75, 90, 0.6);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .glass-card {
@@ -164,9 +173,9 @@
 }
 
 .dark .glass-card {
-  background: rgba(22, 27, 34, 0.62);
-  border: 1px solid rgba(48, 54, 61, 0.95);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  background: rgba(20, 25, 33, 0.7);
+  border: 1px solid rgba(65, 75, 90, 0.5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .glass-card::before {
@@ -182,6 +191,10 @@
   pointer-events: none;
 }
 
+.dark .glass-card::before {
+  background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+}
+
 .glass-card:hover {
   transform: translateY(-4px);
   background: rgba(255,255,255,0.35);
@@ -190,9 +203,9 @@
 }
 
 .dark .glass-card:hover {
-  background: rgba(33, 38, 45, 0.72);
-  border-color: rgba(88, 166, 255, 0.35);
-  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.55);
+  background: rgba(30, 38, 50, 0.85);
+  border-color: rgba(88, 166, 255, 0.4);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(88, 166, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .glass-card::after {
@@ -225,9 +238,9 @@
 .blob-2 { bottom: -10%; right: -10%; width: 60vw; height: 60vw; background: #a5f3fc; animation-duration: 30s; animation-delay: -5s; }
 .blob-3 { top: 40%; left: 30%; width: 40vw; height: 40vw; background: #fbcfe8; animation-duration: 22s; animation-delay: -10s; }
 
-.dark .blob-1 { background: #4c1d95; opacity: 0.3; }
-.dark .blob-2 { background: #0e7490; opacity: 0.3; }
-.dark .blob-3 { background: #831843; opacity: 0.3; }
+.dark .blob-1 { background: #3d5a9e; opacity: 0.25; }
+.dark .blob-2 { background: #1e5f6b; opacity: 0.25; }
+.dark .blob-3 { background: #5c3d6e; opacity: 0.22; }
 
 @keyframes float {
   0%   { transform: translate(0, 0) rotate(0deg); }
@@ -243,9 +256,11 @@
 }
 
 .dark .detail-glass-panel {
-  background: rgba(22, 27, 34, 0.86);
-  border: 1px solid rgba(48, 54, 61, 0.95);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  background: rgba(18, 23, 30, 0.92);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(65, 75, 90, 0.6);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 /* Hide scrollbar while keeping scroll functionality */
@@ -271,8 +286,13 @@
 }
 
 .dark .liquid-button {
-  background: rgba(33, 38, 45, 0.65);
-  border: 1px solid rgba(48, 54, 61, 0.95);
+  background: rgba(28, 35, 46, 0.7);
+  border: 1px solid rgba(65, 75, 90, 0.6);
+}
+.dark .liquid-button:hover {
+  background: rgba(40, 50, 65, 0.85);
+  border-color: rgba(88, 166, 255, 0.35);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 /* Light pastel background */
@@ -291,7 +311,8 @@
 .dark .bg-light-pastel {
   background-color: var(--color-bg);
   background-image: 
-    radial-gradient(at 0% 0%, hsla(220, 40%, 12%, 0.9) 0, transparent 55%),
-    radial-gradient(at 50% 0%, hsla(210, 90%, 60%, 0.22) 0, transparent 55%),
-    radial-gradient(at 100% 0%, hsla(280, 85%, 62%, 0.16) 0, transparent 55%);
+    radial-gradient(ellipse 80% 50% at 0% 0%, hsla(220, 45%, 18%, 0.8) 0, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 60% 10%, hsla(210, 70%, 40%, 0.15) 0, transparent 55%),
+    radial-gradient(ellipse 50% 35% at 100% 0%, hsla(270, 60%, 45%, 0.12) 0, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 50% 100%, hsla(220, 40%, 14%, 0.5) 0, transparent 60%);
 }

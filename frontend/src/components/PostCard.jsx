@@ -1,5 +1,11 @@
 import { useState, useCallback } from 'react';
 
+const LONG_CONTENT_THRESHOLD = 150;
+
+function isLongContent(content) {
+  return (content?.length || 0) > LONG_CONTENT_THRESHOLD;
+}
+
 function timeAgo(dateStr) {
   const now = Date.now();
   const past = new Date(dateStr).getTime();
@@ -14,16 +20,22 @@ function Avatar({ src, initials, size = 8, className = '' }) {
   const px = size * 4;
   const sizeStyle = { width: `${px}px`, height: `${px}px`, minWidth: `${px}px` };
   if (src) {
-    return (
-      <div className={`rounded-full overflow-hidden border border-white/50 shadow-sm ${className}`} style={sizeStyle}>
+  return (
+    <div className={`rounded-full overflow-hidden border border-white/50 dark:border-white/20 shadow-sm ${className}`} style={sizeStyle}>
         <img src={src} className="w-full h-full object-cover" alt={initials} />
       </div>
     );
   }
-  const colors = ['bg-indigo-100 text-indigo-600', 'bg-emerald-100 text-emerald-600', 'bg-orange-100 text-orange-500', 'bg-purple-100 text-purple-600', 'bg-pink-100 text-pink-600'];
+  const colors = [
+    'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300',
+    'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-300',
+    'bg-orange-100 dark:bg-orange-900/50 text-orange-500 dark:text-orange-300',
+    'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300',
+    'bg-pink-100 dark:bg-pink-900/50 text-pink-600 dark:text-pink-300',
+  ];
   const color = colors[(initials?.charCodeAt(0) || 0) % colors.length];
   return (
-    <div className={`rounded-full ${color} flex items-center justify-center font-bold text-xs border border-white/50 shadow-sm ${className}`} style={sizeStyle}>
+    <div className={`rounded-full ${color} flex items-center justify-center font-bold text-xs border border-white/50 dark:border-white/20 shadow-sm ${className}`} style={sizeStyle}>
       {initials?.slice(0, 2) || '?'}
     </div>
   );
@@ -54,14 +66,14 @@ function TextCard({ post, onLike, liked, onClick, onTagClick }) {
         </div>
         <span className="text-xs text-[color:var(--color-fg-subtle)]">{timeAgo(post.created_at)}</span>
       </div>
-      <p className="text-[color:var(--color-fg)] leading-relaxed font-normal text-sm sm:text-base whitespace-pre-wrap">{post.content}</p>
+      <p className={`text-[color:var(--color-fg)] leading-relaxed font-normal whitespace-pre-wrap ${isLongContent(post.content) ? 'text-xs sm:text-sm' : 'text-sm sm:text-base'}`}>{post.content}</p>
       {post.tags?.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mt-3">
           {post.tags.map(tag => (
             <span
               key={tag}
               onClick={e => { e.stopPropagation(); onTagClick?.(tag); }}
-              className="px-2 py-0.5 rounded-md bg-white/40 dark:bg-white/10 text-[10px] font-bold text-[#197fe6] uppercase tracking-wider cursor-pointer hover:bg-[#197fe6]/10 transition-colors"
+              className="px-2 py-0.5 rounded-md bg-white/40 dark:bg-[#58a6ff]/25 text-[10px] font-bold text-[#197fe6] dark:text-[#ffffff] uppercase tracking-wider cursor-pointer hover:bg-[#197fe6]/10 dark:hover:bg-[#0f2435] dark:hover:text-[#0096ff] transition-colors"
             >
               #{tag}
             </span>
@@ -91,7 +103,7 @@ function ImageCard({ post, onLike, liked, onClick, onTagClick }) {
     <div className="glass-card rounded-2xl p-0" onClick={onClick}>
       <div className="h-44 sm:h-48 w-full overflow-hidden relative rounded-t-2xl">
         <img src={post.image_url} className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" alt="Content" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 dark:from-black/40 to-transparent"></div>
       </div>
       <div className="p-5 sm:p-6">
         <div className="flex items-center justify-between mb-3">
@@ -101,14 +113,14 @@ function ImageCard({ post, onLike, liked, onClick, onTagClick }) {
           </div>
           <span className="text-xs text-[color:var(--color-fg-subtle)]">{timeAgo(post.created_at)}</span>
         </div>
-        <p className="text-[color:var(--color-fg)] leading-relaxed text-sm mb-3 whitespace-pre-wrap">{post.content}</p>
+        <p className={`text-[color:var(--color-fg)] leading-relaxed mb-3 whitespace-pre-wrap ${isLongContent(post.content) ? 'text-xs' : 'text-sm'}`}>{post.content}</p>
         {post.tags?.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-4">
             {post.tags.map(tag => (
               <span
                 key={tag}
                 onClick={e => { e.stopPropagation(); onTagClick?.(tag); }}
-                className="px-2 py-1 rounded-md bg-white/40 dark:bg-white/10 text-[10px] font-bold text-[color:var(--color-fg-subtle)] uppercase tracking-wider cursor-pointer hover:bg-[#197fe6]/10 hover:text-[#197fe6] transition-colors"
+                className="px-2 py-1 rounded-md bg-white/40 dark:bg-[#58a6ff]/25 text-[10px] font-bold text-[color:var(--color-fg-subtle)] dark:text-[#ffffff] uppercase tracking-wider cursor-pointer hover:bg-[#197fe6]/10 dark:hover:bg-[#0f2435] hover:text-[#197fe6] dark:hover:text-[#0096ff] transition-colors"
               >
                 #{tag}
               </span>
@@ -135,7 +147,7 @@ function QuoteCard({ post, onLike, liked, onClick }) {
   const { popping, handleLike } = useLikePop(onLike, liked);
   return (
     <div className="glass-card rounded-2xl p-6 sm:p-8 bg-gradient-to-br from-white/30 to-white/10 dark:from-white/10 dark:to-white/5" onClick={onClick}>
-      <span className="material-symbols-outlined text-[#197fe6]/40 mb-4" style={{ fontSize: '32px' }}>format_quote</span>
+      <span className="material-symbols-outlined text-[#197fe6]/40 dark:text-[#58a6ff]/50 mb-4" style={{ fontSize: '32px' }}>format_quote</span>
       <p className="text-xl sm:text-2xl font-serif italic text-[color:var(--color-fg)] leading-snug mb-6 whitespace-pre-wrap">{post.content}</p>
       <div className="flex items-center justify-between">
         <button
@@ -171,14 +183,14 @@ function ArticleCard({ post, onLike, liked, onClick, onTagClick }) {
         <span className="text-xs text-[color:var(--color-fg-subtle)]">{timeAgo(post.created_at)}</span>
       </div>
       <h3 className="font-bold text-[color:var(--color-fg)] text-base sm:text-lg mb-2">{post.title}</h3>
-      <p className="text-[color:var(--color-fg-muted)] text-sm leading-relaxed mb-4 whitespace-pre-wrap">{post.content}</p>
+      <p className={`text-[color:var(--color-fg-muted)] leading-relaxed mb-4 whitespace-pre-wrap ${isLongContent(post.content) ? 'text-xs' : 'text-sm'}`}>{post.content}</p>
       {post.tags?.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-3">
           {post.tags.map(tag => (
             <span
               key={tag}
               onClick={e => { e.stopPropagation(); onTagClick?.(tag); }}
-              className="px-2 py-0.5 rounded-md bg-white/40 dark:bg-white/10 text-[10px] font-bold text-[#197fe6] uppercase tracking-wider cursor-pointer hover:bg-[#197fe6]/10 transition-colors"
+              className="px-2 py-0.5 rounded-md bg-white/40 dark:bg-[#58a6ff]/25 text-[10px] font-bold text-[#197fe6] dark:text-[#ffffff] uppercase tracking-wider cursor-pointer hover:bg-[#197fe6]/10 dark:hover:bg-[#0f2435] dark:hover:text-[#0096ff] transition-colors"
             >
               #{tag}
             </span>
@@ -211,7 +223,7 @@ function StatusCard({ post, onLike, liked, onClick }) {
   const { popping, handleLike } = useLikePop(onLike, liked);
   return (
     <div className="glass-card rounded-2xl p-4 sm:p-5 flex items-center gap-3 sm:gap-4" onClick={onClick}>
-      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-300 flex items-center justify-center shrink-0">
         <span className="material-symbols-outlined">check_circle</span>
       </div>
       <div className="flex-1 min-w-0">
@@ -234,7 +246,7 @@ function MediaCard({ post, onLike, liked, onClick }) {
   const { popping, handleLike } = useLikePop(onLike, liked);
   return (
     <div className="glass-card rounded-2xl p-0 overflow-hidden group" onClick={onClick}>
-      <div className="h-36 sm:h-40 bg-slate-200 relative">
+      <div className="h-36 sm:h-40 bg-slate-200 dark:bg-slate-800/80 relative">
         <img src={post.image_url} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Media" />
         {post.title && (
           <div className="absolute top-3 right-3 bg-white/80 dark:bg-black/30 backdrop-blur-md px-2 py-1 rounded-md text-[10px] font-bold text-[color:var(--color-fg)] shadow-sm flex items-center gap-1">
@@ -250,7 +262,7 @@ function MediaCard({ post, onLike, liked, onClick }) {
             <p className="text-[10px] text-[color:var(--color-fg-subtle)]">Travelling</p>
           </div>
         </div>
-        <p className="text-[color:var(--color-fg)] text-sm mb-3 whitespace-pre-wrap">{post.content}</p>
+        <p className={`text-[color:var(--color-fg)] mb-3 whitespace-pre-wrap ${isLongContent(post.content) ? 'text-xs' : 'text-sm'}`}>{post.content}</p>
         <button
           onClick={handleLike}
           className={`flex items-center gap-1 transition-colors text-xs ${liked ? 'text-red-500 cursor-default' : 'text-[color:var(--color-fg-subtle)] hover:text-red-500'}`}
@@ -267,7 +279,7 @@ function MediaCard({ post, onLike, liked, onClick }) {
 function PromptCard({ post, onLike, liked, onClick, onTagClick }) {
   const { popping, handleLike } = useLikePop(onLike, liked);
   return (
-    <div className="glass-card rounded-2xl p-5 sm:p-6 bg-gradient-to-tr from-[#197fe6]/10 via-purple-500/10 to-pink-500/10 border-[#197fe6]/20" onClick={onClick}>
+    <div className="glass-card rounded-2xl p-5 sm:p-6 bg-gradient-to-tr from-[#197fe6]/10 via-purple-500/10 to-pink-500/10 dark:from-[#197fe6]/15 dark:via-purple-500/15 dark:to-pink-500/10 dark:border-[#58a6ff]/25 border-[#197fe6]/20" onClick={onClick}>
       <div className="flex justify-between items-start mb-4">
         <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/60 dark:bg-white/10 shadow-sm flex items-center justify-center text-[#197fe6]">
           <span className="material-symbols-outlined">lightbulb</span>
@@ -275,14 +287,14 @@ function PromptCard({ post, onLike, liked, onClick, onTagClick }) {
         {post.tags?.[0] && (
           <span
             onClick={e => { e.stopPropagation(); onTagClick?.(post.tags[0]); }}
-            className="text-xs text-[color:var(--color-fg-subtle)] bg-white/40 dark:bg-white/10 px-2 py-1 rounded-full cursor-pointer hover:bg-[#197fe6]/10 hover:text-[#197fe6] transition-colors"
+            className="text-xs text-[color:var(--color-fg-subtle)] bg-white/40 dark:bg-[#58a6ff]/25 px-2 py-1 rounded-full cursor-pointer hover:bg-[#197fe6]/10 dark:hover:bg-[#0f2435] hover:text-[#197fe6] dark:hover:text-[#0096ff] transition-colors"
           >
             {post.tags[0]}
           </span>
         )}
       </div>
       <h4 className="font-bold text-[color:var(--color-fg)] mb-2 text-sm sm:text-base">{post.title}</h4>
-      <p className="text-[color:var(--color-fg-muted)] text-sm mb-4 whitespace-pre-wrap">{post.content}</p>
+      <p className={`text-[color:var(--color-fg-muted)] mb-4 whitespace-pre-wrap ${isLongContent(post.content) ? 'text-xs' : 'text-sm'}`}>{post.content}</p>
       <div className="flex -space-x-2 overflow-hidden mb-3">
         {[1, 2, 3].map(i => (
           <img key={i} className="inline-block h-5 w-5 sm:h-6 sm:w-6 rounded-full ring-2 ring-white dark:ring-slate-800" src={`https://i.pravatar.cc/150?u=${post.id}${i}`} alt="Avatar" />
@@ -323,14 +335,14 @@ function SimpleCard({ post, onLike, liked, onClick, onTagClick }) {
         </div>
         <span className="text-[10px] text-[color:var(--color-fg-subtle)]">{timeAgo(post.created_at)}</span>
       </div>
-      <p className="text-[color:var(--color-fg-muted)] text-sm italic whitespace-pre-wrap">{post.content}</p>
+      <p className={`text-[color:var(--color-fg-muted)] italic whitespace-pre-wrap ${isLongContent(post.content) ? 'text-xs' : 'text-sm'}`}>{post.content}</p>
       {post.tags?.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mt-3">
           {post.tags.map(tag => (
             <span
               key={tag}
               onClick={e => { e.stopPropagation(); onTagClick?.(tag); }}
-              className="px-2 py-0.5 rounded-md bg-white/40 dark:bg-white/10 text-[10px] font-bold text-[#197fe6] uppercase tracking-wider cursor-pointer hover:bg-[#197fe6]/10 transition-colors"
+              className="px-2 py-0.5 rounded-md bg-white/40 dark:bg-[#58a6ff]/25 text-[10px] font-bold text-[#197fe6] dark:text-[#ffffff] uppercase tracking-wider cursor-pointer hover:bg-[#197fe6]/10 dark:hover:bg-[#0f2435] dark:hover:text-[#0096ff] transition-colors"
             >
               #{tag}
             </span>

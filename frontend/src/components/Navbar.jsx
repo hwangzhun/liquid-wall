@@ -60,7 +60,7 @@ export default function Navbar({ onSearch, onOpenPost, onOpenLogin, darkMode, on
               style={{ width: searchOpen ? '13rem' : '2.5rem' }}
             >
               {searchOpen ? (
-                <div className="flex items-center gap-2 bg-white/60 dark:bg-white/10 rounded-full px-3 py-1.5 border border-white/50 backdrop-blur-sm w-full">
+                <div className="flex items-center gap-2 bg-white/60 dark:bg-white/[0.08] dark:border-white/15 rounded-full px-3 py-1.5 border border-white/50 dark:border-[color:var(--color-border)] backdrop-blur-sm w-full">
                   <span className="material-symbols-outlined text-[color:var(--color-fg-subtle)] shrink-0" style={{ fontSize: '16px' }}>search</span>
                   <input
                     autoFocus
@@ -81,7 +81,7 @@ export default function Navbar({ onSearch, onOpenPost, onOpenLogin, darkMode, on
               ) : (
                 <button
                   onClick={() => setSearchOpen(true)}
-                  className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/40 dark:bg-white/10 text-[color:var(--color-fg-muted)] hover:bg-white dark:hover:bg-white/20 hover:text-[#197fe6] transition-all backdrop-blur-sm"
+                  className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/40 dark:bg-white/[0.08] text-[color:var(--color-fg-muted)] hover:bg-white dark:hover:bg-white/20 hover:text-[#197fe6] dark:hover:text-[#58a6ff] transition-all backdrop-blur-sm"
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>search</span>
                 </button>
@@ -91,7 +91,7 @@ export default function Navbar({ onSearch, onOpenPost, onOpenLogin, darkMode, on
             {/* Dark Mode Toggle */}
             <button
               onClick={onToggleDark}
-              className="hidden sm:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/40 dark:bg-white/10 text-[color:var(--color-fg-muted)] hover:bg-white dark:hover:bg-white/20 transition-all backdrop-blur-sm"
+              className="hidden sm:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/40 dark:bg-white/[0.08] text-[color:var(--color-fg-muted)] hover:bg-white dark:hover:bg-white/20 transition-all backdrop-blur-sm"
               title={darkMode ? '切换浅色模式' : '切换深色模式'}
             >
               <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
@@ -112,7 +112,7 @@ export default function Navbar({ onSearch, onOpenPost, onOpenLogin, darkMode, on
                 </button>
                 <button
                   onClick={logout}
-                  className="hidden sm:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/40 dark:bg-white/10 text-[color:var(--color-fg-muted)] hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 transition-all backdrop-blur-sm"
+                  className="hidden sm:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/40 dark:bg-white/[0.08] text-[color:var(--color-fg-muted)] hover:bg-red-50 dark:hover:bg-red-900/25 hover:text-red-500 dark:hover:text-red-400 transition-all backdrop-blur-sm"
                   title="退出登录"
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>logout</span>
@@ -121,7 +121,7 @@ export default function Navbar({ onSearch, onOpenPost, onOpenLogin, darkMode, on
             ) : (
               <button
                 onClick={onOpenLogin}
-                className="hidden sm:flex items-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 bg-white/40 dark:bg-white/10 text-[color:var(--color-fg-muted)] border border-white/50 dark:border-white/20 rounded-full text-sm font-semibold hover:bg-white dark:hover:bg-white/20 transition-all backdrop-blur-sm"
+                className="hidden sm:flex items-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 bg-white/40 dark:bg-white/[0.08] text-[color:var(--color-fg-muted)] border border-white/50 dark:border-[color:var(--color-border)] rounded-full text-sm font-semibold hover:bg-white dark:hover:bg-white/15 transition-all backdrop-blur-sm"
               >
                 <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>lock</span>
                 <span>登录</span>
@@ -131,7 +131,7 @@ export default function Navbar({ onSearch, onOpenPost, onOpenLogin, darkMode, on
             {/* Mobile Menu Button */}
             <button
               onClick={openDrawer}
-              className="flex md:hidden items-center justify-center w-9 h-9 rounded-full bg-white/40 dark:bg-white/10 text-[color:var(--color-fg-muted)]"
+              className="flex md:hidden items-center justify-center w-9 h-9 rounded-full bg-white/40 dark:bg-white/[0.08] text-[color:var(--color-fg-muted)]"
             >
               <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>menu</span>
             </button>

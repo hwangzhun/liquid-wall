@@ -223,7 +223,7 @@ export default function HomePage({ searchQuery, setPostFormOpen, newPost }) {
               className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all border ${
                 !activeTag
                   ? 'bg-[#197fe6] text-white border-[#197fe6] shadow-sm'
-                  : 'bg-white/40 dark:bg-white/10 text-[color:var(--color-fg-muted)] border-white/50 dark:border-white/20 hover:bg-white/70 dark:hover:bg-white/20'
+                  : 'bg-white/40 dark:bg-white/[0.08] text-[color:var(--color-fg-muted)] border-white/50 dark:border-[color:var(--color-border)] hover:bg-white/70 dark:hover:bg-white/15'
               }`}
             >
               全部
@@ -235,7 +235,7 @@ export default function HomePage({ searchQuery, setPostFormOpen, newPost }) {
                 className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all border ${
                   activeTag === tag
                     ? 'bg-[#197fe6] text-white border-[#197fe6] shadow-sm'
-                    : 'bg-white/40 dark:bg-white/10 text-[color:var(--color-fg-muted)] border-white/50 dark:border-white/20 hover:bg-white/70 dark:hover:bg-white/20'
+                    : 'bg-white/40 dark:bg-white/[0.08] text-[color:var(--color-fg-muted)] border-white/50 dark:border-[color:var(--color-border)] hover:bg-white/70 dark:hover:bg-white/15'
                 }`}
               >
                 #{tag}
@@ -251,7 +251,7 @@ export default function HomePage({ searchQuery, setPostFormOpen, newPost }) {
           className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all border ${
             shuffled
               ? 'bg-purple-500 text-white border-purple-500 shadow-sm'
-              : 'bg-white/40 dark:bg-white/10 text-[color:var(--color-fg-muted)] border-white/50 dark:border-white/20 hover:bg-white/70 dark:hover:bg-white/20'
+              : 'bg-white/40 dark:bg-white/[0.08] text-[color:var(--color-fg-muted)] border-white/50 dark:border-[color:var(--color-border)] hover:bg-white/70 dark:hover:bg-white/15'
           }`}
         >
           <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>shuffle</span>
@@ -262,15 +262,15 @@ export default function HomePage({ searchQuery, setPostFormOpen, newPost }) {
       {/* Search/Filter Info */}
       {(debouncedSearch || activeTag) && (
         <div className="flex items-center justify-center gap-3 mb-6">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 dark:bg-white/10 border border-white/40 dark:border-white/20 text-sm text-[color:var(--color-fg-muted)]">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 dark:bg-white/[0.08] border border-white/40 dark:border-[color:var(--color-border)] text-sm text-[color:var(--color-fg-muted)]">
             <span className="material-symbols-outlined text-[#197fe6]" style={{ fontSize: '16px' }}>filter_list</span>
             {debouncedSearch && <span>搜索: <strong className="text-[color:var(--color-fg)]">"{debouncedSearch}"</strong></span>}
-            {activeTag && <span>标签: <strong className="text-[#197fe6]">#{activeTag}</strong></span>}
+            {activeTag && <span>标签: <strong className="text-[#197fe6] dark:text-[#58a6ff]">#{activeTag}</strong></span>}
             <span className="text-[color:var(--color-fg-subtle)]">· {posts.length} 条</span>
           </div>
           <button
             onClick={() => { setActiveTag(''); }}
-            className="px-3 py-2 rounded-full text-xs text-[color:var(--color-fg-subtle)] hover:text-[color:var(--color-fg)] hover:bg-white/40 dark:hover:bg-white/10 transition-colors"
+            className="px-3 py-2 rounded-full text-xs text-[color:var(--color-fg-subtle)] hover:text-[color:var(--color-fg)] hover:bg-white/40 dark:hover:bg-white/[0.08] transition-colors"
           >
             清除过滤
           </button>

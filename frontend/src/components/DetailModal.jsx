@@ -1,6 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../context/useAuth';
 
+const LONG_CONTENT_THRESHOLD = 150;
+
+function isLongContent(content) {
+  return (content?.length || 0) > LONG_CONTENT_THRESHOLD;
+}
+
 function timeAgo(dateStr) {
   if (!dateStr) return '';
   const now = Date.now();
@@ -87,14 +93,19 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
 
   const avatarSrc = post.avatar_url;
   const initials = post.initials || post.author?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-  const colors = ['bg-indigo-100 text-indigo-600', 'bg-emerald-100 text-emerald-600', 'bg-orange-100 text-orange-500', 'bg-purple-100 text-purple-600'];
+  const colors = [
+    'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300',
+    'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-300',
+    'bg-orange-100 dark:bg-orange-900/50 text-orange-500 dark:text-orange-300',
+    'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300',
+  ];
   const avatarColor = colors[(initials?.charCodeAt(0) || 0) % colors.length];
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center px-3 sm:px-4 md:px-6 pt-[6rem] sm:pt-[8rem] pb-4 sm:pb-6">
       {/* Backdrop */}
       <div
-        className={`absolute inset-0 bg-slate-50/30 dark:bg-slate-900/40 backdrop-blur-md ${closing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'}`}
+        className={`absolute inset-0 bg-slate-50/30 dark:bg-black/50 backdrop-blur-md ${closing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'}`}
         onClick={handleClose}
       />
 
@@ -191,7 +202,7 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
 
             {/* Content Body */}
             <div className="flex-1 mb-6 sm:mb-10">
-              <p className="text-base sm:text-lg font-light text-[color:var(--color-fg)] leading-relaxed tracking-tight whitespace-pre-wrap">
+              <p className={`font-light text-[color:var(--color-fg)] leading-relaxed tracking-tight whitespace-pre-wrap ${isLongContent(post.content) ? 'text-sm sm:text-base' : 'text-base sm:text-lg'}`}>
                 {post.content}
               </p>
             </div>
@@ -200,7 +211,7 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
             {post.tags?.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-3 sm:mb-4">
                 {post.tags.map(tag => (
-                  <span key={tag} className="px-3 py-1 rounded-full bg-[#197fe6]/10 text-[#197fe6] text-xs font-medium">
+                  <span key={tag} className="px-3 py-1 rounded-full bg-[#197fe6]/10 dark:bg-[#58a6ff]/25 text-[#197fe6] dark:text-[#ffffff] text-xs font-medium">
                     #{tag}
                   </span>
                 ))}
@@ -220,7 +231,7 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
                       key={tag}
                       onClick={() => handleAddTag(tag)}
                       disabled={addingTag === tag}
-                      className="flex items-center gap-1 px-2.5 py-1 rounded-full border border-dashed border-[#197fe6]/40 text-[#197fe6]/60 text-[11px] font-medium hover:bg-[#197fe6]/10 hover:border-[#197fe6]/70 hover:text-[#197fe6] transition-all disabled:opacity-50 disabled:cursor-wait"
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-full border border-dashed border-[#197fe6]/40 dark:border-[#58a6ff]/35 text-[#197fe6]/60 dark:text-[#58a6ff]/70 text-[11px] font-medium hover:bg-[#197fe6]/10 dark:hover:bg-[#58a6ff]/15 hover:border-[#197fe6]/70 dark:hover:border-[#58a6ff]/50 hover:text-[#197fe6] dark:hover:text-[#58a6ff] transition-all disabled:opacity-50 disabled:cursor-wait"
                     >
                       {addingTag === tag ? (
                         <span className="inline-block w-3 h-3 border border-[#197fe6]/30 border-t-[#197fe6] rounded-full animate-spin" />
