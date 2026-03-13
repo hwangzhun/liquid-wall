@@ -1,34 +1,54 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '../context/useAuth';
+import Toast from './Toast';
+import ImageEditor from './ImageEditor';
 
 const POST_TYPES = [
   { value: 'text', label: '💬 文字', icon: 'chat' },
+  { value: 'image', label: '🖼️ 图片', icon: 'image' },
   { value: 'quote', label: '✍️ 引言', icon: 'format_quote' },
   { value: 'article', label: '📝 文章', icon: 'article' },
+  { value: 'location', label: '📍 Location', icon: 'location_on' },
   { value: 'prompt', label: '💡 提示', icon: 'lightbulb' },
-  { value: 'simple', label: '🌟 简短', icon: 'star' },
 ];
 
 export default function PostForm({ onClose, onSubmit, editPost }) {
   const { token } = useAuth();
   const isEditing = !!editPost;
-  const [type, setType] = useState(editPost?.type || 'text');
+  const normalizedType = (editPost?.type === 'media') ? 'location' : editPost?.type;
+  const [type, setType] = useState(normalizedType || 'text');
   const [author, setAuthor] = useState(editPost?.author || import.meta.env.VITE_DEFAULT_AUTHOR || '');
   const [title, setTitle] = useState(editPost?.title || '');
   const [content, setContent] = useState(editPost?.content || '');
+  const [imageUrl, setImageUrl] = useState(editPost?.image_url || '');
   const [tagsInput, setTagsInput] = useState(
     editPost?.tags?.length ? editPost.tags.join(', ') : ''
   );
+  // 图片裁剪参数，编辑时回填
+  const initialCrop = editPost?.image_crop || null;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [availableTags, setAvailableTags] = useState([]);
   const [closing, setClosing] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [toast, setToast] = useState(null);
+  const [imageEditorState, setImageEditorState] = useState(null); // 存储图片编辑器的缩放和位置信息
 
   // Wrap onClose to play exit animation first
   const handleClose = useCallback(() => {
     setClosing(true);
     setTimeout(() => onClose?.(), 210);
   }, [onClose]);
+
+  // 模态打开时禁止背后页面（留言列表）滚轮滚动
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev || '';
+    };
+  }, []);
 
   useEffect(() => {
     const handler = (e) => { if (e.key === 'Escape') handleClose(); };
@@ -44,7 +64,99 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
       .catch(() => {});
   }, []);
 
-  const needsTitle = ['article', 'prompt', 'quote'].includes(type);
+  const needsTitle = ['article', 'prompt', 'quote', 'location'].includes(type);
+  const needsImageUrl = ['image', 'location'].includes(type);
+
+  async function compressImage(file) {
+    const maxWidth = 1920;
+    const quality = 0.8;
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxWidth / img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('无法获取画布上下文'));
+          return;
+        }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              reject(new Error('压缩失败'));
+            } else {
+              resolve(blob);
+            }
+          },
+          'image/jpeg',
+          quality
+        );
+      };
+      img.onerror = () => reject(new Error('图片加载失败'));
+      img.src = URL.createObjectURL(file);
+    });
+    }
+
+  async function handleImageUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setError('请选择图片文件');
+      return;
+    }
+    if (!token) {
+      setError('请先登录后再上传图片');
+      return;
+    }
+    setError('');
+    setUploading(true);
+    setUploadProgress(0);
+
+    try {
+      const compressed = await compressImage(file);
+      const formData = new FormData();
+      formData.append('image', compressed, file.name);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', '/api/upload', true);
+      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const pct = Math.round((event.loaded / event.total) * 100);
+          setUploadProgress(pct);
+        }
+      };
+      const result = await new Promise((resolve, reject) => {
+        xhr.onreadystatechange = () => {
+          if (xhr.readyState === 4) {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              try {
+                const parsed = JSON.parse(xhr.responseText);
+                resolve(parsed);
+              } catch (err) {
+                reject(err);
+              }
+            } else {
+              reject(new Error(xhr.responseText || '上传失败'));
+            }
+          }
+        };
+        xhr.onerror = () => reject(new Error('网络错误，上传失败'));
+        xhr.send(formData);
+      });
+
+      setImageUrl(result.image_url || '');
+      setUploadProgress(100);
+    } catch (err) {
+      setError(err.message || '上传失败');
+      setUploadProgress(0);
+    } finally {
+      setUploading(false);
+    }
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -54,6 +166,14 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
     }
     if (!content.trim()) {
       setError('内容不能为空');
+      return;
+    }
+    if (type === 'location' && !title.trim()) {
+      setError('标题不能为空');
+      return;
+    }
+    if (needsImageUrl && !imageUrl.trim()) {
+      setError('请先上传图片');
       return;
     }
     setError('');
@@ -70,12 +190,33 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
     };
 
     try {
+      let finalImageUrl = imageUrl.trim() || null;
+
+      // 构造 image_crop 数据（包含缩放、位置、容器参考尺寸）
+      let imageCrop = null;
+      if (needsImageUrl && imageEditorState && imageUrl.trim()) {
+        imageCrop = {
+          scale: imageEditorState.scale,
+          x: imageEditorState.position?.x ?? 0,
+          y: imageEditorState.position?.y ?? 0,
+          refW: imageEditorState.refW ?? 0,
+          refH: imageEditorState.refH ?? 0,
+        };
+      }
+
       let res;
       if (isEditing) {
         res = await fetch(`/api/posts/${editPost.id}`, {
           method: 'PUT',
           headers: authHeaders,
-          body: JSON.stringify({ type, title: title.trim() || null, content: content.trim(), tags }),
+          body: JSON.stringify({
+            type,
+            title: title.trim() || null,
+            content: content.trim(),
+            tags,
+            image_url: needsImageUrl ? finalImageUrl : null,
+            image_crop: imageCrop,
+          }),
         });
       } else {
         res = await fetch('/api/posts', {
@@ -88,6 +229,8 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
             title: title.trim() || null,
             content: content.trim(),
             tags,
+            image_url: needsImageUrl ? finalImageUrl : null,
+            image_crop: imageCrop,
           }),
         });
       }
@@ -98,8 +241,13 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
       }
 
       const resultPost = await res.json();
+      // 显示成功提示
+      setToast({ message: isEditing ? '编辑成功' : '发布成功', type: 'success' });
       onSubmit?.(resultPost);
-      handleClose();
+      // 延迟关闭，让用户看到 Toast
+      setTimeout(() => {
+        handleClose();
+      }, 800);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -108,7 +256,15 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-y-auto">
+    <>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+      <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-y-auto">
       {/* Backdrop */}
       <div
         className={`absolute inset-0 bg-slate-50/30 dark:bg-black/50 backdrop-blur-md ${closing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'}`}
@@ -180,7 +336,7 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
           {needsTitle && (
             <div>
               <label className="block text-xs font-semibold text-[color:var(--color-fg-muted)] mb-1.5 uppercase tracking-wider">
-                标题
+                标题 {type === 'location' && <span className="text-red-400">*</span>}
               </label>
               <input
                 type="text"
@@ -190,6 +346,93 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
                 maxLength={100}
                 className="w-full px-4 py-2.5 rounded-xl bg-white/50 dark:bg-white/10 border border-white/50 dark:border-white/20 text-[color:var(--color-fg)] placeholder-[color:var(--color-fg-subtle)] text-sm outline-none focus:border-[#197fe6]/50 focus:ring-2 focus:ring-[#197fe6]/20 transition-all"
               />
+            </div>
+          )}
+
+          {/* Image Upload (conditional) */}
+          {needsImageUrl && (
+            <div>
+              <label className="block text-xs font-semibold text-[color:var(--color-fg-muted)] mb-1.5 uppercase tracking-wider">
+                上传图片 <span className="text-red-400">*</span>
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="file"
+                  id="image-upload-input"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  disabled={uploading}
+                  onClick={() => document.getElementById('image-upload-input')?.click()}
+                  className={`
+                    flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl
+                    text-sm font-medium
+                    border-2 transition-all duration-300 ease-out
+                    ${uploading
+                      ? 'bg-gradient-to-r from-blue-400/20 to-indigo-400/20 border-blue-300/50 text-blue-600 dark:text-blue-400 cursor-wait'
+                      : imageUrl.trim()
+                        ? 'bg-gradient-to-r from-green-400/20 to-emerald-400/20 border-green-400/50 text-green-700 dark:text-green-400 hover:from-green-400/30 hover:to-emerald-400/30 hover:border-green-400/70 hover:shadow-lg hover:shadow-green-400/20 hover:-translate-y-0.5'
+                        : 'bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 border-blue-400/40 text-blue-700 dark:text-blue-300 hover:from-blue-500/20 hover:via-indigo-500/20 hover:to-purple-500/20 hover:border-blue-400/70 hover:shadow-lg hover:shadow-blue-500/20 hover:-translate-y-0.5'
+                    }
+                    active:scale-95 active:translate-y-0
+                  `}
+                >
+                  {uploading ? (
+                    <>
+                      <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                      <span>上传中 {uploadProgress}%</span>
+                    </>
+                  ) : imageUrl.trim() ? (
+                    <>
+                      <span className="material-symbols-outlined text-lg">check_circle</span>
+                      <span>更换图片</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="material-symbols-outlined text-lg">cloud_upload</span>
+                      <span>点击选择图片</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              {uploading && (
+                <div className="mt-3">
+                  <div className="h-1.5 bg-slate-200/50 dark:bg-slate-700/50 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full transition-all duration-300 ease-out"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                  <p className="mt-1.5 text-[11px] text-[color:var(--color-fg-subtle)] text-center">
+                    正在上传图片... {uploadProgress}%
+                  </p>
+                </div>
+              )}
+              {imageUrl.trim() && (
+                <div className="mt-3 w-full h-48 overflow-hidden rounded-lg bg-slate-100 dark:bg-slate-800">
+                  <ImageEditor
+                    imageUrl={imageUrl.trim()}
+                    onChange={setImageEditorState}
+                    initialCrop={initialCrop}
+                  />
+                  <div className="mt-2 flex justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImageUrl('');
+                        setImageEditorState(null);
+                      }}
+                      className="px-3 py-1.5 rounded-lg bg-black/50 backdrop-blur-sm text-white text-xs font-medium hover:bg-black/70 transition-colors"
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>delete</span>
+                      移除图片
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -303,5 +546,6 @@ export default function PostForm({ onClose, onSubmit, editPost }) {
         </form>
       </div>
     </div>
+    </>
   );
 }

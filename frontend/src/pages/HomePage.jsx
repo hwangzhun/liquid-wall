@@ -36,6 +36,7 @@ export default function HomePage({ searchQuery, setPostFormOpen, newPost }) {
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState('');
   const [selectedPost, setSelectedPost] = useState(null);
+  const [deletingPostId, setDeletingPostId] = useState(null);
   const [editingPost, setEditingPost] = useState(null);
   const [activeTag, setActiveTag] = useState('');
   const [shuffled, setShuffled] = useState(false);
@@ -136,16 +137,29 @@ export default function HomePage({ searchQuery, setPostFormOpen, newPost }) {
   // ── CRUD helpers ─────────────────────────────────────────────────────────
   async function handleDelete(postId) {
     if (!isLoggedIn) return;
+    // 先设置删除状态，触发动画
+    setDeletingPostId(postId);
+    
     try {
       const res = await fetch(`/api/posts/${postId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` },
       });
-      if (!res.ok) return;
-      setPosts(prev => prev.filter(p => p.id !== postId));
-      setSelectedPost(null);
+      if (!res.ok) {
+        // 删除失败，清除删除状态
+        setDeletingPostId(null);
+        return;
+      }
+      
+      // 删除成功，等待动画完成后再从列表中移除
+      setTimeout(() => {
+        setPosts(prev => prev.filter(p => p.id !== postId));
+        setSelectedPost(null);
+        setDeletingPostId(null);
+      }, 300);
     } catch (err) {
       void err;
+      setDeletingPostId(null);
     }
   }
 

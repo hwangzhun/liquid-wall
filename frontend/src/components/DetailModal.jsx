@@ -1,5 +1,61 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useAuth } from '../context/useAuth';
+import Toast from './Toast';
+
+// 复用裁剪展示逻辑（与卡片一致）
+function useCroppedImage(imageUrl, imageCrop, cardWidth = 400, cardHeight = 500) {
+  if (!imageCrop || !imageUrl) {
+    return { src: imageUrl, style: {} };
+  }
+  const { scale = 1, x = 0, y = 0, refW = cardWidth, refH = cardHeight } = imageCrop;
+  const scaleX = cardWidth / refW;
+  const scaleY = cardHeight / refH;
+  const adjustedX = x * scaleX;
+  const adjustedY = y * scaleY;
+  return {
+    src: imageUrl,
+    style: {
+      transform: `translate(${adjustedX}px, ${adjustedY}px) scale(${scale})`,
+      transformOrigin: '0 0',
+    },
+  };
+}
+
+// 详情页图片展示组件（带裁剪）
+function CroppedImageDisplay({ imageUrl, imageCrop }) {
+  const containerRef = useRef(null);
+  const [size, setSize] = useState({ width: 400, height: 500 });
+
+  useEffect(() => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setSize({ width: rect.width, height: rect.height });
+    }
+  }, []);
+
+  const cropped = useCroppedImage(imageUrl, imageCrop, size.width, size.height);
+  const hasCrop = !!imageCrop;
+
+  return (
+    <div ref={containerRef} className="absolute inset-0">
+      {hasCrop ? (
+        <div className="absolute inset-0">
+          <img
+            src={cropped.src}
+            style={cropped.style}
+            className="absolute left-0 top-0 max-w-none max-h-none select-none"
+            alt="Content"
+          />
+        </div>
+      ) : (
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-80 mix-blend-overlay"
+          style={{ backgroundImage: `url("${imageUrl}")` }}
+        />
+      )}
+    </div>
+  );
+}
 
 const LONG_CONTENT_THRESHOLD = 150;
 
@@ -26,6 +82,8 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
   const [addingTag, setAddingTag] = useState(false);
   const [closing, setClosing] = useState(false);
   const [likePopping, setLikePopping] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Wrap onClose to play exit animation first
   const handleClose = useCallback(() => {
@@ -89,6 +147,29 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
     onLike?.(post.id);
   }
 
+  async function handleDelete() {
+    if (isDeleting) return;
+    setIsDeleting(true);
+
+    try {
+      // 触发删除动画和实际删除逻辑
+      onDelete?.(post.id);
+      
+      // 显示成功提示
+      setToast({ message: '删除成功', type: 'success' });
+      
+      // 等待动画完成（450ms）后再关闭弹窗
+      setTimeout(() => {
+        handleClose();
+      }, 450);
+    } catch (err) {
+      setToast({ message: '删除失败：网络错误', type: 'error' });
+    } finally {
+      setIsDeleting(false);
+      setConfirmDelete(false);
+    }
+  }
+
   if (!post) return null;
 
   const avatarSrc = post.avatar_url;
@@ -102,12 +183,20 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
   const avatarColor = colors[(initials?.charCodeAt(0) || 0) % colors.length];
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center px-3 sm:px-4 md:px-6 pt-[6rem] sm:pt-[8rem] pb-4 sm:pb-6">
-      {/* Backdrop */}
-      <div
-        className={`absolute inset-0 bg-slate-50/30 dark:bg-black/50 backdrop-blur-md ${closing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'}`}
-        onClick={handleClose}
-      />
+    <>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+      <div className="fixed inset-0 z-[60] flex items-center justify-center px-3 sm:px-4 md:px-6 pt-[6rem] sm:pt-[8rem] pb-4 sm:pb-6">
+        {/* Backdrop */}
+        <div
+          className={`absolute inset-0 bg-slate-50/30 dark:bg-black/50 backdrop-blur-md ${closing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'}`}
+          onClick={handleClose}
+        />
 
       {/* Modal */}
       <div className={`relative w-full max-w-3xl detail-glass-panel rounded-2xl sm:rounded-3xl p-0 overflow-hidden shadow-2xl flex flex-col max-h-[calc(100vh-8rem)] sm:max-h-[calc(100vh-11rem)] ${closing ? 'modal-panel-exit' : 'modal-panel-enter'}`}>
@@ -118,14 +207,23 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700/50">
                 <span className="text-xs text-red-600 dark:text-red-400 font-medium whitespace-nowrap">确认删除？</span>
                 <button
-                  onClick={() => onDelete?.(post.id)}
-                  className="px-2.5 py-1 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors"
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="px-2.5 py-1 rounded-lg bg-red-500 hover:bg-red-600 disabled:bg-red-400 text-white text-xs font-semibold transition-colors flex items-center gap-1.5"
                 >
-                  删除
+                  {isDeleting ? (
+                    <>
+                      <span className="inline-block w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" />
+                      删除中
+                    </>
+                  ) : (
+                    '删除'
+                  )}
                 </button>
                 <button
                   onClick={() => setConfirmDelete(false)}
-                  className="px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/20 text-[color:var(--color-fg-muted)] text-xs font-semibold transition-colors"
+                  disabled={isDeleting}
+                  className="px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/20 text-[color:var(--color-fg-muted)] text-xs font-semibold transition-colors disabled:opacity-50"
                 >
                   取消
                 </button>
@@ -161,12 +259,9 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
         <div className="flex flex-col md:flex-row min-h-[400px] sm:min-h-[500px] overflow-y-auto flex-1 scrollbar-hide">
           {/* Left Visual */}
           {post.image_url && (
-            <div className="hidden md:flex md:w-2/5 bg-slate-100/30 dark:bg-slate-800/30 border-r border-white/20 dark:border-white/10 relative items-center justify-center overflow-hidden">
+            <div className="hidden md:flex md:w-2/5 bg-slate-100/30 dark:bg-slate-800/30 border-r border-white/20 dark:border-white/10 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-[#197fe6]/5 to-transparent"></div>
-              <div
-                className="absolute inset-0 bg-cover bg-center opacity-80 mix-blend-overlay"
-                style={{ backgroundImage: `url("${post.image_url}")` }}
-              />
+              <CroppedImageDisplay imageUrl={post.image_url} imageCrop={post.image_crop} />
               <div className="absolute bottom-6 left-6 right-6">
                 <div className="flex items-center gap-2 text-[color:var(--color-fg-subtle)] text-xs font-medium uppercase tracking-wider backdrop-blur-sm bg-white/30 dark:bg-white/10 w-fit px-3 py-1 rounded-full">
                   <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>image</span>
@@ -306,5 +401,6 @@ export default function DetailModal({ post, onClose, onLike, liked, onDelete, on
         </div>
       </div>
     </div>
+    </>
   );
 }

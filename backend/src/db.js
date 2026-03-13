@@ -1,7 +1,7 @@
 const Database = require('better-sqlite3');
 const path = require('path');
 
-const DB_PATH = path.join(__dirname, '..', 'database.sqlite');
+const DB_PATH = process.env.DB_PATH || path.join(__dirname, '..', 'database.sqlite');
 
 let db;
 
@@ -26,11 +26,19 @@ function initSchema() {
       content TEXT NOT NULL,
       tags TEXT DEFAULT '[]',
       image_url TEXT,
+      image_crop TEXT,
       likes INTEGER NOT NULL DEFAULT 0,
       comments_count INTEGER NOT NULL DEFAULT 0,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  // 迁移：为已有数据库添加 image_crop 列
+  try {
+    db.exec(`ALTER TABLE posts ADD COLUMN image_crop TEXT`);
+  } catch (e) {
+    // 列已存在，忽略错误
+  }
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS post_likes (

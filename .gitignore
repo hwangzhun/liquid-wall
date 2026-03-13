@@ -1,0 +1,16 @@
+node_modules
+.env
+.cursor
+/backend/node_modules
+/backend/database.sqlite
+/backend/database.sqlite-shm
+/backend/database.sqlite-wal
+/frontend/node_modules
+/frontend/dist
+/frontend/dist-ssr
+/frontend/*.local
+/frontend/coverage
+/frontend/.vscode
+/frontend/.idea
+/frontend/.DS_Store
+/frontend/*.suo
