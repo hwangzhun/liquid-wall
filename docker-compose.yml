@@ -1,0 +1,42 @@
+services:
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - DB_PATH=/data/database.sqlite
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+    volumes:
+      - ./data:/data
+    expose:
+      - "3001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  frontend-builder:
+    build: ./frontend
+    volumes:
+      - frontend-static:/usr/share/nginx/html
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - frontend-static:/usr/share/nginx/html:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend-builder:
+        condition: service_completed_successfully
+
+volumes:
+  frontend-static:
